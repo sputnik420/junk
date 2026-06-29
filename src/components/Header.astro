@@ -26,22 +26,23 @@ const dict = {
   }
 };
 const t = dict[lang];
-const prefix = lang === 'en' ? '' : '/es';
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+const prefix = lang === 'en' ? baseUrl : `${baseUrl}/es`;
 ---
 
 <header class="header">
   <div class="container header-inner">
-    <a href={lang === 'en' ? '/' : '/es'} class="logo-link">
+    <a href={lang === 'en' ? (baseUrl + '/') : (baseUrl + '/es/')} class="logo-link">
       <img src={business.logo} alt={`${business.name} Logo`} class="logo" />
     </a>
     
     <nav class="desktop-nav">
       <ul class="nav-links">
         <li><a href={`${prefix}/#home`}>{t.home}</a></li>
-        <li><a href={`${prefix}/services`}>{t.services}</a></li>
+        <li><a href={`${prefix}/services/`}>{t.services}</a></li>
         <li><a href={`${prefix}/#areas`}>{t.areas}</a></li>
         <li><a href={`${prefix}/#how-it-works`}>{t.howItWorks}</a></li>
-        <li><a href={`${prefix}/contact`}>{t.contact}</a></li>
+        <li><a href={`${prefix}/contact/`}>{t.contact}</a></li>
       </ul>
     </nav>
 

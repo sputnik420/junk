@@ -1,36 +1,54 @@
-name: Deploy Astro site to HostGator via FTP
+name: Deploy Astro site to GitHub Pages
 
 on:
   push:
     branches: ["main", "master"]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+env:
+  BUILD_PATH: "."
+
 jobs:
-  build-and-deploy:
-    name: Build & Deploy
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: "npm"
-
+          cache-dependency-path: ${{ env.BUILD_PATH }}/package-lock.json
       - name: Install dependencies
         run: npm ci
-
+        working-directory: ${{ env.BUILD_PATH }}
       - name: Build with Astro
         run: npm run build
-
-      - name: FTP Deploy to HostGator
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        working-directory: ${{ env.BUILD_PATH }}
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist/
-          server-dir: ./public_html/
-          # If your HostGator puts the domain in a subfolder, change server-dir to something like ./public_html/ansebjunk.com/
+          path: ${{ env.BUILD_PATH }}/dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -35,7 +35,7 @@ const t = dict[lang];
     </div>
     
     <p class="mb-3"><strong>{t.cta}</strong></p>
-    <a href={lang === 'en' ? '/contact' : '/es/contact'} class="btn btn-secondary">
+    <a href={lang === 'en' ? (import.meta.env.BASE_URL.replace(/\/$/, '') + '/contact/') : (import.meta.env.BASE_URL.replace(/\/$/, '') + '/es/contact/')} class="btn btn-secondary">
       {t.contact}
     </a>
   </div>

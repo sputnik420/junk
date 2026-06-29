@@ -19,7 +19,8 @@ const dict = {
   }
 };
 const t = dict[lang];
-const prefix = lang === 'en' ? '' : '/es';
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+const prefix = lang === 'en' ? baseUrl : `${baseUrl}/es`;
 ---
 
 <div class="sticky-cta-bar">
@@ -31,7 +32,7 @@ const prefix = lang === 'en' ? '' : '/es';
     <span class="icon">💬</span>
     {t.text}
   </a>
-  <a href={`${prefix}/contact`} class="sticky-btn sticky-estimate" data-cta="estimate-form" data-location="sticky-mobile">
+  <a href={`${prefix}/contact/`} class="sticky-btn sticky-estimate" data-cta="estimate-form" data-location="sticky-mobile">
     <span class="icon">📋</span>
     {t.estimate}
   </a>

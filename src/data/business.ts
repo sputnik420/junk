@@ -6,7 +6,7 @@ export const business = {
   email: "info@ansebjunk.com",
   city: "Houston",
   state: "TX",
-  logo: "/images/anseb-logo.png",
+  logo: import.meta.env.BASE_URL + "images/anseb-logo.png",
   googleBusinessProfileUrl: "#",
   googleReviewUrl: "#",
   googlePlaceId: "",
@@ -14,8 +14,8 @@ export const business = {
   googleReviewCount: "",
   showGoogleReviews: false,
   languages: {
-    en: "/",
-    es: "/es"
+    en: import.meta.env.BASE_URL,
+    es: import.meta.env.BASE_URL + "es/"
   },
   serviceArea: [
     "Houston",
