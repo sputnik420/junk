@@ -1,0 +1,78 @@
+---
+import { business } from '../data/business';
+
+interface Props {
+  lang?: 'en' | 'es';
+}
+const { lang = 'en' } = Astro.props;
+
+const dict = {
+  en: {
+    title: "Frequently Asked Questions",
+    faqs: [
+      { q: "What items do you remove?", a: "We remove furniture, appliances, household junk, garage clutter, yard waste, light construction debris, office junk, and more. If you are not sure, send us a photo." },
+      { q: "Do I need to move the items outside?", a: "No. In most cases, you point to what needs to go and our team handles the lifting and loading." },
+      { q: "Do you offer same-day pickup?", a: "Same-day or next-day pickup may be available depending on schedule and location. Contact us for availability." },
+      { q: "How do I get an estimate?", a: `The fastest way is to text us photos of the items, your ZIP code, and when you need pickup to ${business.phoneDisplay}.` },
+      { q: "Do you serve areas outside Houston?", a: "Yes, we serve Houston and many surrounding areas. Contact us with your ZIP code to confirm availability." },
+      { q: "Do you remove construction debris?", a: "Yes, we can remove light construction and remodeling debris. Send photos so we can review the material and volume." }
+    ]
+  },
+  es: {
+    title: "Preguntas Frecuentes",
+    faqs: [
+      { q: "¿Qué artículos retiran?", a: "Retiramos muebles, electrodomésticos, basura doméstica, desorden de garaje, desechos de jardín, escombros ligeros, basura de oficina y más. Si no está seguro, envíenos una foto." },
+      { q: "¿Necesito mover los artículos afuera?", a: "No. En la mayoría de los casos, usted nos indica qué debe irse y nuestro equipo se encarga de levantarlo y cargarlo." },
+      { q: "¿Ofrecen recolección el mismo día?", a: "La recolección el mismo día o al día siguiente puede estar disponible dependiendo de nuestro horario y su ubicación. Contáctenos para disponibilidad." },
+      { q: "¿Cómo obtengo un estimado?", a: `La forma más rápida es enviarnos por texto fotos de los artículos, su código postal y cuándo necesita la recolección al ${business.phoneDisplay}.` },
+      { q: "¿Sirven áreas fuera de Houston?", a: "Sí, servimos a Houston y muchas áreas circundantes. Contáctenos con su código postal para confirmar disponibilidad." },
+      { q: "¿Retiran escombros de construcción?", a: "Sí, podemos retirar escombros ligeros de construcción y remodelación. Envíe fotos para que podamos revisar el material y el volumen." }
+    ]
+  }
+};
+const t = dict[lang];
+---
+
+<section class="section">
+  <div class="container">
+    <h2 class="text-center mb-5">{t.title}</h2>
+    
+    <div class="faq-list">
+      {t.faqs.map(faq => (
+        <div class="faq-item">
+          <h3 class="faq-question">{faq.q}</h3>
+          <p class="faq-answer">{faq.a}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq-list {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .faq-item {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-soft-gray);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+  }
+  
+  .faq-question {
+    font-size: 1.15rem;
+    color: var(--color-primary-green);
+    margin-bottom: 0.5rem;
+  }
+  
+  .faq-answer {
+    color: var(--color-soft-black);
+    line-height: 1.6;
+  }
+</style>

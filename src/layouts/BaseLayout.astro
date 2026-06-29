@@ -1,0 +1,84 @@
+---
+import { business } from '../data/business';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang?: 'en' | 'es';
+}
+
+const { 
+  title = `Junk Removal Houston TX | ${business.name}`,
+  description = `Need junk removal in Houston, TX? ${business.name} offers fast furniture removal, appliance removal, garage cleanouts, yard waste removal, construction debris hauling, and more. Call or text for a free estimate.`,
+  lang = 'en'
+} = Astro.props;
+
+const currentUrl = new URL(Astro.url.pathname, Astro.site || business.domain).href;
+const alternateUrl = lang === 'en' 
+  ? new URL(business.languages.es, Astro.site || business.domain).href 
+  : new URL(business.languages.en, Astro.site || business.domain).href;
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- Hreflang Tags -->
+    <link rel="alternate" hreflang="en" href={new URL(business.languages.en, Astro.site || business.domain).href} />
+    <link rel="alternate" hreflang="es" href={new URL(business.languages.es, Astro.site || business.domain).href} />
+    <link rel="canonical" href={currentUrl} />
+
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={currentUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content={new URL(business.logo, Astro.site || business.domain).href} />
+
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(business.logo, Astro.site || business.domain).href} />
+
+    <!-- Google Tag Manager Placeholder -->
+    <!-- <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-XXXXXXX');</script> -->
+
+    <!-- LocalBusiness Schema -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": business.name,
+      "url": business.domain,
+      "telephone": business.phoneDisplay,
+      "image": business.logo,
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": business.city,
+        "addressRegion": business.state
+      },
+      "areaServed": business.serviceArea.map(area => ({
+        "@type": "City",
+        "name": area
+      })),
+      "serviceType": "Junk Removal"
+    })} />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <!-- GTM NoScript Placeholder -->
+    <!-- <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript> -->
+    
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,42 @@
+---
+import { business } from '../data/business';
+
+interface Props {
+  lang?: 'en' | 'es';
+}
+const { lang = 'en' } = Astro.props;
+
+const dict = {
+  en: {
+    title: "Ready to Clear the Junk?",
+    text: `Call or text ${business.name} today. Send us photos and get a quick estimate.`,
+    call: "Call Now",
+    textBtn: "Text Photos"
+  },
+  es: {
+    title: "¿Listo para Limpiar el Desorden?",
+    text: `Llame o envíe un texto a ${business.name} hoy. Envíenos fotos y reciba un estimado rápido.`,
+    call: "Llamar Ahora",
+    textBtn: "Enviar Fotos"
+  }
+};
+const t = dict[lang];
+---
+
+<section class="section section-dark text-center">
+  <div class="container">
+    <h2 class="mb-3">{t.title}</h2>
+    <p class="mb-4" style="font-size: 1.1rem; max-width: 600px; margin-left: auto; margin-right: auto; opacity: 0.9;">
+      {t.text}
+    </p>
+    
+    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+      <a href={`tel:${business.phoneTel}`} class="btn btn-primary" data-cta="call" data-location="bottom-cta">
+        {t.call}
+      </a>
+      <a href={`sms:${business.phoneTel}`} class="btn btn-secondary" style="background-color: transparent; color: white; border-color: white;" data-cta="text" data-location="bottom-cta">
+        {t.textBtn}
+      </a>
+    </div>
+  </div>
+</section>

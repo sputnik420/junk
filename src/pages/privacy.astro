@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import StickyMobileCTA from '../components/StickyMobileCTA.astro';
+import { business } from '../data/business';
+
+const title = `Privacy Policy | ${business.name}`;
+const lang = 'en';
+---
+
+<BaseLayout lang={lang} title={title}>
+  <Header lang={lang} />
+  
+  <main class="section">
+    <div class="container" style="max-width: 800px; margin: 0 auto; background: var(--color-white); padding: 3rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+      <h1 class="mb-4">Privacy Policy</h1>
+      
+      <p class="mb-3">Last updated: {new Date().toLocaleDateString()}</p>
+      
+      <p class="mb-3">At {business.name}, we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, and share information about you when you use our website or services.</p>
+      
+      <h2 class="mt-4 mb-3">Information We Collect</h2>
+      <p class="mb-3">We collect information you provide directly to us, such as when you request an estimate, fill out a form, or communicate with us. This information may include:</p>
+      <ul class="mb-3" style="margin-left: 1.5rem;">
+        <li>Name</li>
+        <li>Phone Number</li>
+        <li>Email Address</li>
+        <li>ZIP Code</li>
+        <li>Service Details</li>
+        <li>Photos (for estimate purposes)</li>
+      </ul>
+      
+      <h2 class="mt-4 mb-3">How We Use Information</h2>
+      <p class="mb-3">We use the information we collect to:</p>
+      <ul class="mb-3" style="margin-left: 1.5rem;">
+        <li>Provide, maintain, and improve our services.</li>
+        <li>Process and complete transactions, and send you related information, including estimates and invoices.</li>
+        <li>Respond to your comments, questions, and requests.</li>
+        <li>Contact you regarding your request or inquiry.</li>
+      </ul>
+      
+      <h2 class="mt-4 mb-3">Contact Us</h2>
+      <p class="mb-3">If you have any questions about this Privacy Policy, please contact us at:</p>
+      <p class="mb-1"><strong>Phone:</strong> {business.phoneDisplay}</p>
+      <p class="mb-3"><strong>Email:</strong> {business.email}</p>
+    </div>
+  </main>
+  
+  <Footer lang={lang} />
+  <StickyMobileCTA lang={lang} />
+</BaseLayout>

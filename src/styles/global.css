@@ -1,0 +1,199 @@
+/* src/styles/global.css */
+:root {
+  --color-primary-green: #5BA10E;
+  --color-bright-green: #89BC56;
+  --color-deep-black: #050505;
+  --color-soft-black: #131413;
+  --color-dark-olive: #2F3826;
+  --color-light-bg: #F7F9F5;
+  --color-soft-gray: #E3E9E0;
+  --color-medium-gray: #868687;
+  --color-white: #FFFFFF;
+  --color-error: #D32F2F;
+  --color-success: #388E3C;
+  
+  --font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  font-family: var(--font-family-base);
+  background-color: var(--color-light-bg);
+  color: var(--color-soft-black);
+  line-height: 1.6;
+  scroll-behavior: smooth;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-deep-black);
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--color-primary-green);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-bright-green);
+}
+
+/* Utilities */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
+.mb-5 { margin-bottom: 3rem; }
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+.mt-5 { margin-top: 3rem; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: var(--color-primary-green);
+  color: var(--color-white);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-bright-green);
+  color: var(--color-white);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(47, 56, 38, 0.15);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--color-deep-black);
+  border: 2px solid var(--color-deep-black);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-deep-black);
+  color: var(--color-white);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--color-primary-green);
+  border: 2px solid var(--color-primary-green);
+}
+
+.btn-outline:hover {
+  background-color: var(--color-primary-green);
+  color: var(--color-white);
+}
+
+/* Sections */
+.section {
+  padding: 4rem 0;
+}
+
+.section-dark {
+  background-color: var(--color-soft-black);
+  color: var(--color-white);
+}
+
+.section-dark h1, .section-dark h2, .section-dark h3 {
+  color: var(--color-white);
+}
+
+.section-gray {
+  background-color: var(--color-soft-gray);
+}
+
+/* Cards */
+.card {
+  background-color: var(--color-white);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid var(--color-soft-gray);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--color-soft-black);
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--color-medium-gray);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary-green);
+  box-shadow: 0 0 0 2px rgba(91, 161, 14, 0.2);
+}
+
+/* Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Sticky Mobile CTA Compensation */
+@media (max-width: 768px) {
+  body {
+    padding-bottom: 80px; /* Space for the sticky CTA */
+  }
+}

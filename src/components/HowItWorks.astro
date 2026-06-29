@@ -1,0 +1,107 @@
+---
+interface Props {
+  lang?: 'en' | 'es';
+}
+const { lang = 'en' } = Astro.props;
+
+const dict = {
+  en: {
+    title: "How It Works",
+    steps: [
+      { num: "1", title: "Send Us a Photo", desc: "Text us photos of what you need removed." },
+      { num: "2", title: "Get a Quick Estimate", desc: "We'll review the items, location, and pickup details." },
+      { num: "3", title: "We Load & Haul It Away", desc: "You point, we load, and your space is cleared." }
+    ]
+  },
+  es: {
+    title: "Cómo Funciona",
+    steps: [
+      { num: "1", title: "Envíenos una Foto", desc: "Envíenos por texto fotos de lo que necesita retirar." },
+      { num: "2", title: "Reciba un Estimado Rápido", desc: "Revisaremos los artículos, ubicación y detalles." },
+      { num: "3", title: "Cargamos y Nos lo Llevamos", desc: "Usted nos indica, nosotros cargamos y su espacio queda limpio." }
+    ]
+  }
+};
+const t = dict[lang];
+---
+
+<section id="how-it-works" class="section section-gray">
+  <div class="container text-center">
+    <h2 class="mb-5">{t.title}</h2>
+    
+    <div class="steps-grid">
+      {t.steps.map(step => (
+        <div class="step-item">
+          <div class="step-number">{step.num}</div>
+          <h3 class="step-title">{step.title}</h3>
+          <p class="step-desc">{step.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .steps-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  
+  .step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .step-number {
+    width: 60px;
+    height: 60px;
+    background-color: var(--color-primary-green);
+    color: var(--color-white);
+    font-size: 1.5rem;
+    font-weight: 800;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 10px rgba(91, 161, 14, 0.3);
+  }
+  
+  .step-title {
+    font-size: 1.3rem;
+    color: var(--color-deep-black);
+    margin-bottom: 0.5rem;
+  }
+  
+  .step-desc {
+    color: var(--color-soft-black);
+    max-width: 300px;
+  }
+
+  @media (min-width: 768px) {
+    .steps-grid {
+      grid-template-columns: repeat(3, 1fr);
+      position: relative;
+    }
+    
+    /* Connecting line */
+    .steps-grid::before {
+      content: '';
+      position: absolute;
+      top: 30px;
+      left: 15%;
+      right: 15%;
+      height: 2px;
+      background-color: var(--color-primary-green);
+      z-index: 0;
+      opacity: 0.3;
+    }
+    
+    .step-item {
+      position: relative;
+      z-index: 1;
+    }
+  }
+</style>

@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import ServicesGrid from '../components/ServicesGrid.astro';
+import HowItWorks from '../components/HowItWorks.astro';
+import WhyChooseUs from '../components/WhyChooseUs.astro';
+import GoogleReviews from '../components/GoogleReviews.astro';
+import ServiceAreas from '../components/ServiceAreas.astro';
+import FAQ from '../components/FAQ.astro';
+import CTASection from '../components/CTASection.astro';
+import Footer from '../components/Footer.astro';
+import StickyMobileCTA from '../components/StickyMobileCTA.astro';
+import { business } from '../data/business';
+
+const lang = 'es';
+const title = `Junk Removal en Houston, TX | ${business.name}`;
+const description = `¿Necesita remover basura en Houston, TX? ${business.name} ofrece retiro de muebles, electrodomésticos, limpieza de garaje y más. Llame para un estimado gratis.`;
+---
+
+<BaseLayout lang={lang} title={title} description={description}>
+  <Header lang={lang} />
+  
+  <main>
+    <Hero lang={lang} />
+    <ServicesGrid lang={lang} />
+    <HowItWorks lang={lang} />
+    <WhyChooseUs lang={lang} />
+    <GoogleReviews lang={lang} />
+    <ServiceAreas lang={lang} />
+    
+    <section class="section">
+      <div class="container" style="max-width: 800px; margin: 0 auto;">
+        <div id="estimate-form-container-es"></div>
+      </div>
+    </section>
+    
+    <FAQ lang={lang} />
+    <CTASection lang={lang} />
+  </main>
+  
+  <Footer lang={lang} />
+  <StickyMobileCTA lang={lang} />
+</BaseLayout>
+
+<script>
+  import React from 'react';
+  import { createRoot } from 'react-dom/client';
+  import EstimateForm from '../components/EstimateForm';
+
+  const container = document.getElementById('estimate-form-container-es');
+  if (container) {
+    const root = createRoot(container);
+    root.render(React.createElement(EstimateForm, { lang: 'es' }));
+  }
+</script>

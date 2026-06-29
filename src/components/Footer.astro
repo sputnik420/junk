@@ -1,0 +1,170 @@
+---
+import { business } from '../data/business';
+
+interface Props {
+  lang?: 'en' | 'es';
+}
+const { lang = 'en' } = Astro.props;
+
+const dict = {
+  en: {
+    about: "About",
+    services: "Services",
+    areas: "Service Areas",
+    contact: "Contact Us",
+    privacy: "Privacy Policy",
+    terms: "Terms of Service",
+    rights: "All rights reserved."
+  },
+  es: {
+    about: "Acerca de",
+    services: "Servicios",
+    areas: "Áreas de Servicio",
+    contact: "Contáctenos",
+    privacy: "Política de Privacidad",
+    terms: "Términos de Servicio",
+    rights: "Todos los derechos reservados."
+  }
+};
+const t = dict[lang];
+const prefix = lang === 'en' ? '' : '/es';
+---
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src={business.logo} alt={`${business.name} Logo`} class="footer-logo" />
+        <p class="footer-desc">
+          {business.city}, {business.state}<br/>
+          {business.spanish}
+        </p>
+      </div>
+      
+      <div class="footer-links">
+        <h3>{t.about}</h3>
+        <ul>
+          <li><a href={`${prefix}/#home`}>{t.about}</a></li>
+          <li><a href={`${prefix}/services`}>{t.services}</a></li>
+          <li><a href={`${prefix}/#areas`}>{t.areas}</a></li>
+          <li><a href={`${prefix}/contact`}>{t.contact}</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-contact">
+        <h3>{t.contact}</h3>
+        <p>
+          <a href={`tel:${business.phoneTel}`} data-cta="call" data-location="footer">
+            {business.phoneDisplay}
+          </a>
+        </p>
+        <p>
+          <a href={`mailto:${business.email}`} data-cta="email" data-location="footer">
+            {business.email}
+          </a>
+        </p>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; {new Date().getFullYear()} {business.name}. {t.rights}</p>
+      <div class="legal-links">
+        <a href={`${prefix}/privacy`}>{t.privacy}</a>
+        <a href={`${prefix}/terms`}>{t.terms}</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background-color: var(--color-deep-black);
+    color: var(--color-white);
+    padding: 4rem 0 2rem;
+  }
+  
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+  }
+  
+  .footer-brand .footer-logo {
+    height: 60px;
+    width: auto;
+    object-fit: contain;
+    margin-bottom: 1rem;
+    background-color: var(--color-white); /* Add white background for logo visibility if it's dark text */
+    padding: 0.5rem;
+    border-radius: 4px;
+  }
+  
+  .footer-desc {
+    color: var(--color-soft-gray);
+    font-size: 0.95rem;
+  }
+  
+  .footer h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    color: var(--color-white);
+  }
+  
+  .footer-links ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .footer-links li {
+    margin-bottom: 0.75rem;
+  }
+  
+  .footer-links a, .footer-contact a {
+    color: var(--color-soft-gray);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .footer-links a:hover, .footer-contact a:hover {
+    color: var(--color-primary-green);
+  }
+  
+  .footer-contact p {
+    margin-bottom: 0.75rem;
+  }
+  
+  .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--color-medium-gray);
+  }
+  
+  .legal-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .legal-links a {
+    color: var(--color-medium-gray);
+  }
+  
+  .legal-links a:hover {
+    color: var(--color-primary-green);
+  }
+
+  @media (min-width: 768px) {
+    .footer-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .footer-bottom {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+</style>

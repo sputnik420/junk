@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import StickyMobileCTA from '../components/StickyMobileCTA.astro';
+import { business } from '../data/business';
+
+const title = `Terms of Service | ${business.name}`;
+const lang = 'en';
+---
+
+<BaseLayout lang={lang} title={title}>
+  <Header lang={lang} />
+  
+  <main class="section">
+    <div class="container" style="max-width: 800px; margin: 0 auto; background: var(--color-white); padding: 3rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+      <h1 class="mb-4">Terms of Service</h1>
+      
+      <p class="mb-3">Last updated: {new Date().toLocaleDateString()}</p>
+      
+      <p class="mb-3">Welcome to {business.name}. By accessing or using our website and services, you agree to comply with and be bound by these Terms of Service.</p>
+      
+      <h2 class="mt-4 mb-3">1. Services</h2>
+      <p class="mb-3">We provide junk removal and hauling services. The scope of work, pricing, and scheduling will be agreed upon before any services are rendered.</p>
+      
+      <h2 class="mt-4 mb-3">2. Estimates</h2>
+      <p class="mb-3">Estimates provided via phone, text, or email are based on the information and photos provided. Final pricing will be confirmed on-site before we begin loading.</p>
+      
+      <h2 class="mt-4 mb-3">3. User Responsibilities</h2>
+      <p class="mb-3">You agree that you have the right and authority to dispose of all items you ask us to remove. We are not responsible for items mistakenly identified as junk by the customer.</p>
+      
+      <h2 class="mt-4 mb-3">4. Limitation of Liability</h2>
+      <p class="mb-3">{business.name} is not liable for indirect, incidental, or consequential damages arising from the use of our services.</p>
+      
+      <h2 class="mt-4 mb-3">Contact Us</h2>
+      <p class="mb-3">If you have any questions about these Terms, please contact us at:</p>
+      <p class="mb-1"><strong>Phone:</strong> {business.phoneDisplay}</p>
+      <p class="mb-3"><strong>Email:</strong> {business.email}</p>
+    </div>
+  </main>
+  
+  <Footer lang={lang} />
+  <StickyMobileCTA lang={lang} />
+</BaseLayout>

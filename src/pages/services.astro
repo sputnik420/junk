@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import StickyMobileCTA from '../components/StickyMobileCTA.astro';
+import ServicesGrid from '../components/ServicesGrid.astro';
+import CTASection from '../components/CTASection.astro';
+import { business } from '../data/business';
+
+const title = `Our Services | ${business.name}`;
+const lang = 'en';
+---
+
+<BaseLayout lang={lang} title={title}>
+  <Header lang={lang} />
+  
+  <main>
+    <section class="section section-gray">
+      <div class="container text-center">
+        <h1>Junk Removal Services</h1>
+        <p style="font-size: 1.1rem; max-width: 600px; margin: 0 auto; color: var(--color-soft-black);">
+          We offer a full range of junk removal services for residential and commercial customers.
+        </p>
+      </div>
+    </section>
+
+    <ServicesGrid lang={lang} />
+    
+    <CTASection lang={lang} />
+  </main>
+  
+  <Footer lang={lang} />
+  <StickyMobileCTA lang={lang} />
+</BaseLayout>

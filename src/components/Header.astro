@@ -1,0 +1,204 @@
+---
+import { business } from '../data/business';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+
+interface Props {
+  lang?: 'en' | 'es';
+}
+const { lang = 'en' } = Astro.props;
+
+const dict = {
+  en: {
+    home: "Home",
+    services: "Services",
+    areas: "Service Areas",
+    howItWorks: "How It Works",
+    contact: "Contact",
+    callNow: "Call Now"
+  },
+  es: {
+    home: "Inicio",
+    services: "Servicios",
+    areas: "Áreas de Servicio",
+    howItWorks: "Cómo Funciona",
+    contact: "Contacto",
+    callNow: "Llamar Ahora"
+  }
+};
+const t = dict[lang];
+const prefix = lang === 'en' ? '' : '/es';
+---
+
+<header class="header">
+  <div class="container header-inner">
+    <a href={lang === 'en' ? '/' : '/es'} class="logo-link">
+      <img src={business.logo} alt={`${business.name} Logo`} class="logo" />
+    </a>
+    
+    <nav class="desktop-nav">
+      <ul class="nav-links">
+        <li><a href={`${prefix}/#home`}>{t.home}</a></li>
+        <li><a href={`${prefix}/services`}>{t.services}</a></li>
+        <li><a href={`${prefix}/#areas`}>{t.areas}</a></li>
+        <li><a href={`${prefix}/#how-it-works`}>{t.howItWorks}</a></li>
+        <li><a href={`${prefix}/contact`}>{t.contact}</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions desktop-only">
+      <LanguageSwitcher lang={lang} />
+      <a href={`tel:${business.phoneTel}`} class="btn btn-primary" data-cta="call" data-location="header">
+        {t.callNow} <span class="phone-display">{business.phoneDisplay}</span>
+      </a>
+    </div>
+
+    <!-- Mobile Menu Toggle (simplified for static) -->
+    <div class="mobile-actions">
+      <LanguageSwitcher lang={lang} />
+      <a href={`tel:${business.phoneTel}`} class="btn btn-primary btn-small" data-cta="call" data-location="header-mobile">
+        Call
+      </a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .header {
+    background-color: var(--color-white);
+    border-bottom: 1px solid transparent;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: all 0.4s ease;
+  }
+  
+  .header.scrolled {
+    border-bottom: 1px solid var(--color-soft-gray);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 80px;
+    transition: all 0.4s ease;
+  }
+
+  .logo-link {
+    display: flex;
+    align-items: center;
+    transition: all 0.4s ease;
+  }
+
+  .logo {
+    height: 50px;
+    width: auto;
+    object-fit: contain;
+    transition: height 0.4s ease;
+  }
+  
+  .desktop-nav {
+    display: none;
+  }
+  .nav-links {
+    display: flex;
+    list-style: none;
+    gap: 1.5rem;
+  }
+  .nav-links a {
+    color: var(--color-deep-black);
+    font-weight: 600;
+  }
+  .nav-links a:hover {
+    color: var(--color-primary-green);
+  }
+  
+  .header-actions {
+    display: none;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .phone-display {
+    margin-left: 0.5rem;
+    font-weight: 800;
+  }
+
+  .mobile-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  /* DESKTOP STYLES */
+  @media (min-width: 1024px) {
+    .desktop-nav, .header-actions {
+      display: flex;
+    }
+    .mobile-actions {
+      display: none;
+    }
+
+    /* Enable wrapping so the logo can take its own row */
+    .header-inner {
+      flex-wrap: wrap;
+    }
+
+    /* Not Scrolled: Logo is large, centered, on top */
+    .header:not(.scrolled) .header-inner {
+      height: 220px;
+      padding-top: 1.25rem;
+      align-content: flex-start;
+    }
+    
+    .header:not(.scrolled) .logo-link {
+      flex: 0 0 100%;
+      justify-content: center;
+      margin-bottom: 0.75rem;
+      order: -1;
+    }
+    
+    .header:not(.scrolled) .logo {
+      height: 150px;
+    }
+
+    /* Scrolled: Single row */
+    .header.scrolled .header-inner {
+      height: 80px;
+      padding-top: 0;
+      align-content: center;
+    }
+
+    .header.scrolled .logo-link {
+      flex: 0 0 auto;
+      margin-bottom: 0;
+    }
+    
+    .header.scrolled .logo {
+      height: 45px;
+    }
+  }
+</style>
+
+<script>
+  // Add scroll event listener to toggle 'scrolled' class on the header
+  const header = document.querySelector('.header');
+  
+  const handleScroll = () => {
+    if (window.scrollY > 50) {
+      header?.classList.add('scrolled');
+    } else {
+      header?.classList.remove('scrolled');
+    }
+  };
+
+  // Initial check in case page is loaded already scrolled
+  handleScroll();
+
+  window.addEventListener('scroll', handleScroll, { passive: true });
+</script>

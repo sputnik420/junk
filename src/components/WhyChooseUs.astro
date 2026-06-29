@@ -1,0 +1,87 @@
+---
+import { business } from '../data/business';
+
+interface Props {
+  lang?: 'en' | 'es';
+}
+const { lang = 'en' } = Astro.props;
+
+const dict = {
+  en: {
+    title: `Why Choose ${business.name}?`,
+    reasons: [
+      { title: "Local Houston Team", desc: "We serve Houston and surrounding areas with fast, local service." },
+      { title: "Easy Photo Estimates", desc: "Send a few pictures and get a quick response." },
+      { title: "No Heavy Lifting", desc: "Our team handles the loading, lifting, and hauling." },
+      { title: "Residential & Commercial", desc: "We help homeowners, renters, landlords, contractors, and businesses." },
+      { title: "Clean, Simple Process", desc: "Clear communication from estimate to pickup." },
+      { title: "Responsible Disposal", desc: "When possible, usable items are donated or recycled." }
+    ]
+  },
+  es: {
+    title: `¿Por qué elegir ${business.name}?`,
+    reasons: [
+      { title: "Equipo Local en Houston", desc: "Servimos a Houston y áreas circundantes con un servicio local y rápido." },
+      { title: "Estimados por Foto", desc: "Envíe algunas fotos y reciba una respuesta rápida." },
+      { title: "Sin Levantar Objetos Pesados", desc: "Nuestro equipo se encarga de cargar, levantar y transportar todo." },
+      { title: "Residencial y Comercial", desc: "Ayudamos a dueños de casa, inquilinos, contratistas y negocios." },
+      { title: "Proceso Sencillo", desc: "Comunicación clara desde el estimado hasta la recolección." },
+      { title: "Disposición Responsable", desc: "Cuando es posible, los artículos útiles se donan o reciclan." }
+    ]
+  }
+};
+const t = dict[lang];
+---
+
+<section class="section">
+  <div class="container">
+    <h2 class="text-center mb-5">{t.title}</h2>
+    
+    <div class="reasons-grid">
+      {t.reasons.map(reason => (
+        <div class="card reason-card">
+          <h3 class="reason-title">{reason.title}</h3>
+          <p class="reason-desc">{reason.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .reasons-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .reason-card {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-soft-gray);
+    border-radius: 8px;
+    padding: 1.5rem;
+  }
+  
+  .reason-title {
+    font-size: 1.2rem;
+    color: var(--color-deep-black);
+    margin-bottom: 0.5rem;
+  }
+  
+  .reason-desc {
+    color: var(--color-soft-black);
+    font-size: 0.95rem;
+  }
+
+  @media (min-width: 768px) {
+    .reasons-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .reasons-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

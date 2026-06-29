@@ -1,0 +1,153 @@
+---
+import { business } from '../data/business';
+
+interface Props {
+  lang?: 'en' | 'es';
+}
+const { lang = 'en' } = Astro.props;
+
+const dict = {
+  en: {
+    h1: "Junk Removal in Houston, TX",
+    sub: "Fast, affordable junk removal for homes, apartments, offices, and job sites.",
+    support: "Got old furniture, appliances, garage junk, yard waste, or construction debris? ANSEB Junk Removal makes it easy. Send us a photo, get a quick estimate, and our team will load it and haul it away.",
+    call: "Call Now",
+    text: "Text Photos for Estimate",
+    trust1: "Free Estimates",
+    trust2: "Fast Pickup",
+    trust3: "Residential & Commercial",
+    trust4: "Se habla español"
+  },
+  es: {
+    h1: "Junk Removal en Houston, TX",
+    sub: "Servicio rápido y confiable para retirar muebles, electrodomésticos, basura de garaje, desechos de jardín, escombros ligeros de construcción y más.",
+    support: "Mándanos fotos de lo que necesitas retirar, recibe un estimado rápido y nuestro equipo se encarga de cargar y llevarse todo.",
+    call: "Llamar Ahora",
+    text: "Enviar Fotos por Texto",
+    trust1: "Estimados Gratis",
+    trust2: "Recolección Rápida",
+    trust3: "Residencial y Comercial",
+    trust4: "Hablamos Español"
+  }
+};
+const t = dict[lang];
+---
+
+<section id="home" class="hero section">
+  <div class="container hero-container">
+    <div class="hero-content">
+      <h1 class="hero-title">{t.h1}</h1>
+      <p class="hero-subtitle">{t.sub}</p>
+      <p class="hero-support">{t.support}</p>
+      
+      <div class="hero-ctas">
+        <a href={`tel:${business.phoneTel}`} class="btn btn-primary" data-cta="call" data-location="hero">
+          {t.call}
+        </a>
+        <a href={`sms:${business.phoneTel}`} class="btn btn-secondary" data-cta="text" data-location="hero">
+          {t.text}
+        </a>
+      </div>
+
+      <div class="hero-trust">
+        <span class="trust-badge">✓ {t.trust1}</span>
+        <span class="trust-badge">✓ {t.trust2}</span>
+        <span class="trust-badge">✓ {t.trust3}</span>
+        <span class="trust-badge">✓ {t.trust4}</span>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <!-- Placeholder for real image -->
+      <div class="image-placeholder">
+        <span>Image Placeholder: Junk removal truck or crew loading items</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    background-color: var(--color-light-bg);
+    overflow: hidden;
+  }
+  .hero-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  
+  .hero-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: var(--color-deep-black);
+  }
+  
+  .hero-subtitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--color-primary-green);
+  }
+  
+  .hero-support {
+    font-size: 1.1rem;
+    color: var(--color-soft-black);
+    margin-bottom: 2rem;
+  }
+  
+  .hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+  
+  .hero-trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .trust-badge {
+    background-color: var(--color-soft-gray);
+    color: var(--color-deep-black);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-block;
+  }
+  
+  .hero-visual {
+    width: 100%;
+  }
+  
+  .image-placeholder {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: linear-gradient(135deg, var(--color-soft-gray), #ced6cc);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    color: var(--color-dark-olive);
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  }
+
+  @media (min-width: 768px) {
+    .hero-title {
+      font-size: 3.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-container {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,178 @@
+---
+import { business } from '../data/business';
+
+interface Props {
+  lang?: 'en' | 'es';
+}
+const { lang = 'en' } = Astro.props;
+
+const dict = {
+  en: {
+    title: "Trusted by Local Customers",
+    findUs: "Find us on Google",
+    leaveReview: "Leave a Review",
+    readReviews: "Read Our Google Reviews"
+  },
+  es: {
+    title: "Recomendado por Clientes Locales",
+    findUs: "Encuéntranos en Google",
+    leaveReview: "Déjanos una Reseña",
+    readReviews: "Leer Reseñas en Google"
+  }
+};
+const t = dict[lang];
+
+const { showGoogleReviews, googleRating, googleReviewCount, googleBusinessProfileUrl, googleReviewUrl } = business;
+---
+
+<section class="section section-gray google-reviews-section">
+  <div class="container text-center">
+    <h2 class="mb-4">{t.title}</h2>
+    
+    {!showGoogleReviews && (
+      <div class="basic-reputation">
+        <div class="ctas mt-3">
+          <a href={googleBusinessProfileUrl} target="_blank" rel="noopener noreferrer" class="btn btn-outline" data-cta="google-profile" data-location="reviews-section">
+            {t.findUs}
+          </a>
+          <a href={googleReviewUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary" data-cta="leave-review" data-location="reviews-section">
+            {t.leaveReview}
+          </a>
+        </div>
+      </div>
+    )}
+
+    {showGoogleReviews && (
+      <div class="real-reviews">
+        <div class="rating-summary mb-4">
+          <div class="stars">
+            <!-- SVG stars would go here -->
+            <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+          </div>
+          <p class="rating-text">
+            <strong>{googleRating}</strong> / 5.0 based on <strong>{googleReviewCount}</strong> reviews
+          </p>
+        </div>
+
+        <div class="reviews-grid mb-4">
+          <!-- Real Review Cards (Placeholders for now, to be filled from GMB data later) -->
+          <div class="card review-card text-left">
+            <div class="review-header">
+              <div class="reviewer-initial">C</div>
+              <div class="reviewer-info">
+                <strong>Customer Name</strong>
+                <span class="review-date">1 month ago</span>
+              </div>
+            </div>
+            <div class="review-stars">★★★★★</div>
+            <p class="review-body">
+              "Great service! They arrived on time and cleared out our entire garage quickly. Highly recommended."
+            </p>
+          </div>
+          <div class="card review-card text-left">
+            <div class="review-header">
+              <div class="reviewer-initial">M</div>
+              <div class="reviewer-info">
+                <strong>Customer Name</strong>
+                <span class="review-date">2 weeks ago</span>
+              </div>
+            </div>
+            <div class="review-stars">★★★★★</div>
+            <p class="review-body">
+              "Very professional and affordable. Removed my old couch and fridge without any issues."
+            </p>
+          </div>
+          <div class="card review-card text-left">
+            <div class="review-header">
+              <div class="reviewer-initial">J</div>
+              <div class="reviewer-info">
+                <strong>Customer Name</strong>
+                <span class="review-date">3 months ago</span>
+              </div>
+            </div>
+            <div class="review-stars">★★★★★</div>
+            <p class="review-body">
+              "Fast communication and same-day pickup. Left the space completely clean."
+            </p>
+          </div>
+        </div>
+
+        <div class="ctas">
+          <a href={googleBusinessProfileUrl} target="_blank" rel="noopener noreferrer" class="btn btn-outline" data-cta="read-reviews" data-location="reviews-section">
+            {t.readReviews}
+          </a>
+          <a href={googleReviewUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary" data-cta="leave-review" data-location="reviews-section">
+            {t.leaveReview}
+          </a>
+        </div>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .google-reviews-section h2 {
+    color: var(--color-deep-black);
+  }
+  .ctas {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .stars {
+    font-size: 2rem;
+    color: #FABB05; /* Google Yellow */
+    margin-bottom: 0.5rem;
+  }
+  .rating-text {
+    font-size: 1.1rem;
+    color: var(--color-soft-black);
+  }
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    .reviews-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .review-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  .reviewer-initial {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--color-primary-green);
+    color: var(--color-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  .reviewer-info {
+    display: flex;
+    flex-direction: column;
+  }
+  .review-date {
+    font-size: 0.8rem;
+    color: var(--color-medium-gray);
+  }
+  .review-stars {
+    color: #FABB05;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+  }
+  .review-body {
+    font-size: 0.95rem;
+    color: var(--color-soft-black);
+    line-height: 1.5;
+  }
+</style>
