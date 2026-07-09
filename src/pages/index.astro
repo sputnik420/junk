@@ -23,6 +23,31 @@ const lang = 'en';
     <ServicesGrid lang={lang} />
     <HowItWorks lang={lang} />
     <WhyChooseUs lang={lang} />
+
+    <!-- Real Results from actual jobs -->
+    <section class="section section-gray">
+      <div class="container">
+        <div class="text-center mb-4">
+          <h2>Real Results</h2>
+          <p style="max-width: 520px; margin: 0 auto; color: var(--color-soft-black);">Before &amp; after from actual junk removal jobs in Houston area homes and properties.</p>
+        </div>
+        <div style="max-width: 960px; margin: 0 auto; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+          <picture>
+            <source 
+              srcset={`${import.meta.env.BASE_URL}images/results-before-after.webp`} 
+              type="image/webp" 
+            />
+            <img 
+              src={`${import.meta.env.BASE_URL}images/results-before-after.jpg`} 
+              alt="Antes y después: Espacio lleno de escombros transformado en un área limpia y vacía por ANSEB Junk Removal" 
+              style="width: 100%; display: block;"
+              width="960"
+              height="540"
+            />
+          </picture>
+        </div>
+      </div>
+    </section>
     <GoogleReviews lang={lang} />
     <ServiceAreas lang={lang} />
     
