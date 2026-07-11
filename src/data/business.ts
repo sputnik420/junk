@@ -13,6 +13,7 @@ export const business = {
   googleRating: "",
   googleReviewCount: "",
   showGoogleReviews: false,
+  facebookUrl: "https://www.facebook.com/profile.php?id=61592033511507",
   languages: {
     en: import.meta.env.BASE_URL,
     es: import.meta.env.BASE_URL + "es/"
