@@ -9,18 +9,25 @@ const { lang = 'en' } = Astro.props;
 const dict = {
   en: {
     title: "Serving Houston & Surrounding Areas",
-    text: `${business.name} serves customers throughout the Houston area.`,
+    text: `${business.name} serves customers throughout the Houston area and nearby communities, subject to availability. We do not guarantee coverage for all zip codes.`,
     cta: "Don't see your area? Contact us and we'll let you know if we can help.",
     contact: "Contact Us"
   },
   es: {
     title: "Sirviendo a Houston y Áreas Circundantes",
-    text: `${business.name} atiende a clientes en toda el área de Houston.`,
+    text: `${business.name} atiende a clientes en toda el área de Houston y comunidades cercanas, sujeto a disponibilidad. No garantizamos cobertura para todos los códigos postales.`,
     cta: "¿No ve su área? Contáctenos y le diremos si podemos ayudarle.",
     contact: "Contáctenos"
   }
 };
 const t = dict[lang];
+
+const routes = {
+  en: { contact: '/contact/' },
+  es: { contact: '/es/contacto/' }
+};
+const r = routes[lang];
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <section id="areas" class="section section-gray">
@@ -35,7 +42,7 @@ const t = dict[lang];
     </div>
     
     <p class="mb-3"><strong>{t.cta}</strong></p>
-    <a href={lang === 'en' ? (import.meta.env.BASE_URL.replace(/\/$/, '') + '/contact/') : (import.meta.env.BASE_URL.replace(/\/$/, '') + '/es/contact/')} class="btn btn-secondary">
+    <a href={`${baseUrl}${r.contact}`} class="btn btn-secondary">
       {t.contact}
     </a>
   </div>

@@ -1,4 +1,6 @@
 ---
+import { business } from '../data/business';
+
 interface Props {
   lang?: 'en' | 'es';
 }
@@ -17,7 +19,8 @@ const dict = {
       { title: "Construction Debris Removal", desc: "Light remodeling debris, wood, drywall, flooring, cabinets, and job-site cleanup." },
       { title: "Commercial Junk Removal", desc: "Office cleanouts, retail spaces, warehouses, property management, and business junk removal." }
     ],
-    cta: "Not sure if we take it? Text us a photo."
+    notSure: "Not sure if we take it?",
+    textUs: "Text Us a Photo"
   },
   es: {
     title: "Servicios de Retiro de Basura",
@@ -31,7 +34,8 @@ const dict = {
       { title: "Escombros de Construcción", desc: "Escombros ligeros de remodelación, madera, paneles de yeso, pisos, gabinetes." },
       { title: "Retiro Comercial", desc: "Limpiezas de oficinas, espacios comerciales, almacenes, administración de propiedades." }
     ],
-    cta: "¿No está seguro si lo llevamos? Envíenos una foto por texto."
+    notSure: "¿No está seguro si lo llevamos?",
+    textUs: "Envíenos una Foto"
   }
 };
 
@@ -55,9 +59,9 @@ const t = dict[lang];
     </div>
 
     <div class="text-center mt-5">
-      <p class="services-cta-text">{t.cta}</p>
-      <a href="sms:+1XXXXXXXXXX" class="btn btn-primary mt-2" data-cta="text" data-location="services">
-        {lang === 'en' ? "Text Us a Photo" : "Envíenos una Foto"}
+      <p class="services-cta-text">{t.notSure}</p>
+      <a href={`sms:${business.phoneTel}`} class="btn btn-primary mt-2" data-cta="text" data-location="services">
+        {t.textUs}
       </a>
     </div>
   </div>

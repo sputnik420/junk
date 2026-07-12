@@ -34,7 +34,7 @@ $subject = "New Estimate Request from $name";
 
 // 3. Email Boundaries for attachments
 $boundary = md5(time());
-$headers = "From: webmaster@" . $_SERVER['SERVER_NAME'] . "\r\n";
+$headers = "From: ANSEB Junk Removal <info@ansebjunk.com>\r\n";
 if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $headers .= "Reply-To: $email\r\n";
 }
@@ -57,27 +57,33 @@ $body .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
 $body .= $messageBody . "\r\n";
 
 // 5. Attachments
+$allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 for ($i = 0; $i < 3; $i++) {
     $fileKey = "photo$i";
     if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] == UPLOAD_ERR_OK) {
         $fileTmpPath = $_FILES[$fileKey]['tmp_name'];
         $fileName = $_FILES[$fileKey]['name'];
         $fileSize = $_FILES[$fileKey]['size'];
-        $fileType = $_FILES[$fileKey]['type'];
+        
+        // Use mime_content_type to get actual MIME type, fallback to the one provided by user
+        $fileType = function_exists('mime_content_type') ? mime_content_type($fileTmpPath) : $_FILES[$fileKey]['type'];
 
-        // Limit size (e.g. 5MB)
-        if ($fileSize <= 5 * 1024 * 1024) {
-            $handle = fopen($fileTmpPath, "r");
-            if ($handle) {
-                $content = fread($handle, $fileSize);
-                fclose($handle);
-                $encodedContent = chunk_split(base64_encode($content));
+        // Strict MIME type check
+        if (in_array($fileType, $allowedMimeTypes)) {
+            // Limit size (e.g. 5MB)
+            if ($fileSize <= 5 * 1024 * 1024) {
+                $handle = fopen($fileTmpPath, "r");
+                if ($handle) {
+                    $content = fread($handle, $fileSize);
+                    fclose($handle);
+                    $encodedContent = chunk_split(base64_encode($content));
 
-                $body .= "--$boundary\r\n";
-                $body .= "Content-Type: $fileType; name=\"$fileName\"\r\n";
-                $body .= "Content-Disposition: attachment; filename=\"$fileName\"\r\n";
-                $body .= "Content-Transfer-Encoding: base64\r\n\r\n";
-                $body .= $encodedContent . "\r\n";
+                    $body .= "--$boundary\r\n";
+                    $body .= "Content-Type: $fileType; name=\"$fileName\"\r\n";
+                    $body .= "Content-Disposition: attachment; filename=\"$fileName\"\r\n";
+                    $body .= "Content-Transfer-Encoding: base64\r\n\r\n";
+                    $body .= $encodedContent . "\r\n";
+                }
             }
         }
     }

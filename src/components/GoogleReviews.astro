@@ -12,99 +12,87 @@ const dict = {
     findUs: "Find us on Google",
     leaveReview: "Leave a Review",
     readReviews: "Read Our Google Reviews",
-    monthsAgo: "months ago",
-    weeksAgo: "weeks ago",
-    daysAgo: "days ago"
+    neutralTitle: "Find ANSEB Junk Removal on Google",
+    neutralText: "Visit our Google Business Profile for the latest business information and customer feedback."
   },
   es: {
     title: "Recomendado por Clientes Locales",
     findUs: "Encuéntranos en Google",
     leaveReview: "Déjanos una Reseña",
     readReviews: "Leer Reseñas en Google",
-    monthsAgo: "meses atrás",
-    weeksAgo: "semanas atrás",
-    daysAgo: "días atrás"
+    neutralTitle: "Encuentre ANSEB Junk Removal en Google",
+    neutralText: "Visite nuestro perfil de Google para consultar la información más reciente del negocio y las opiniones disponibles."
   }
 };
 const t = dict[lang];
 
-let { showGoogleReviews, googleRating, googleReviewCount, googleBusinessProfileUrl, googleReviewUrl, googlePlaceId } = business;
+let { showGoogleReviews, googleBusinessProfileUrl, googleReviewUrl, googlePlaceId } = business;
 
-let reviewsData = [];
+let reviewsData: any[] = [];
+let googleRating = 0;
+let googleReviewCount = 0;
+let hasRealReviews = false;
 
 if (showGoogleReviews && googlePlaceId) {
   try {
-    // Attempt to get the API key from environment variables (build time)
     const apiKey = import.meta.env.GMAPAPI || process.env.GMAPAPI;
     
     if (apiKey) {
-      const response = await fetch(`https://maps.googleapis.com/maps/api/place/details/json?place_id=${googlePlaceId}&fields=rating,user_ratings_total,reviews&key=${apiKey}&language=${lang}`);
+      // New Google Places API v1
+      const languageCode = lang === 'es' ? 'es' : 'en';
+      const response = await fetch(`https://places.googleapis.com/v1/places/${googlePlaceId}?languageCode=${languageCode}`, {
+        headers: {
+          'X-Goog-Api-Key': apiKey,
+          'X-Goog-FieldMask': 'rating,userRatingCount,reviews,googleMapsUri'
+        }
+      });
+      
       const data = await response.json();
       
-      if (data.result) {
-        googleRating = data.result.rating || googleRating;
-        googleReviewCount = data.result.user_ratings_total || googleReviewCount;
-        if (data.result.reviews) {
-          // Get top 3 positive reviews (4 or 5 stars)
-          reviewsData = data.result.reviews
+      if (response.ok && data) {
+        googleRating = data.rating || 0;
+        googleReviewCount = data.userRatingCount || 0;
+        
+        if (googleReviewCount > 0) {
+          hasRealReviews = true;
+        }
+
+        if (data.reviews && data.reviews.length > 0) {
+          // Get top 3 positive reviews
+          reviewsData = data.reviews
             .filter((r: any) => r.rating >= 4)
             .slice(0, 3);
         }
       } else {
-        console.warn("Google Maps API Error:", data.status, data.error_message);
+        console.warn("Google Maps API Error:", data.error?.message || response.statusText);
       }
     } else {
-      console.warn("GMAPAPI secret is not set. Using fallback reviews.");
+      console.warn("GMAPAPI secret is not set. Showing neutral fallback.");
     }
   } catch (e) {
     console.error("Error fetching Google Reviews", e);
   }
 }
-
-// Fallback hardcoded reviews if API fails, no key is provided, or no reviews exist yet
-if (reviewsData.length === 0) {
-  reviewsData = [
-    {
-      author_name: "Carlos M.",
-      rating: 5,
-      relative_time_description: "1 month ago",
-      text: "Excellent service! They arrived on time and cleared out our entire garage quickly. Very professional."
-    },
-    {
-      author_name: "Sarah T.",
-      rating: 5,
-      relative_time_description: "2 weeks ago",
-      text: "Very affordable and efficient. They removed my old couch and fridge without any issues. Highly recommended!"
-    },
-    {
-      author_name: "Miguel R.",
-      rating: 5,
-      relative_time_description: "3 months ago",
-      text: "Fast communication and same-day pickup. They left the space completely clean. Will use them again."
-    }
-  ];
-}
 ---
 
 <section class="section section-gray google-reviews-section">
   <div class="container text-center">
-    <h2 class="mb-4">{t.title}</h2>
     
-    {!showGoogleReviews && (
+    {!hasRealReviews && (
       <div class="basic-reputation">
-        <div class="ctas mt-3">
-          <a href={googleBusinessProfileUrl} target="_blank" rel="noopener noreferrer" class="btn btn-outline" data-cta="google-profile" data-location="reviews-section">
+        <h2 class="mb-4">{t.neutralTitle}</h2>
+        <p style="max-width: 600px; margin: 0 auto; color: var(--color-soft-black);">{t.neutralText}</p>
+        <div class="ctas mt-4">
+          <a href={googleBusinessProfileUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary" data-cta="google-profile" data-location="reviews-section">
             {t.findUs}
-          </a>
-          <a href={googleReviewUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary" data-cta="leave-review" data-location="reviews-section">
-            {t.leaveReview}
           </a>
         </div>
       </div>
     )}
 
-    {showGoogleReviews && (
+    {hasRealReviews && (
       <div class="real-reviews">
+        <h2 class="mb-4">{t.title}</h2>
         <div class="rating-summary mb-4">
           <div class="stars">
             <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
@@ -118,19 +106,34 @@ if (reviewsData.length === 0) {
           {reviewsData.map((review) => (
             <div class="card review-card text-left">
               <div class="review-header">
-                <div class="reviewer-initial">{review.author_name.charAt(0)}</div>
+                {review.authorAttribution?.photoUri ? (
+                  <img src={review.authorAttribution.photoUri} alt={review.authorAttribution.displayName} class="reviewer-img" loading="lazy" decoding="async" width="40" height="40" />
+                ) : (
+                  <div class="reviewer-initial">
+                    {review.authorAttribution?.displayName ? review.authorAttribution.displayName.charAt(0) : 'C'}
+                  </div>
+                )}
+                
                 <div class="reviewer-info">
-                  <strong>{review.author_name}</strong>
-                  <span class="review-date">{review.relative_time_description}</span>
+                  <strong>
+                    {review.authorAttribution?.uri ? (
+                      <a href={review.authorAttribution.uri} target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">
+                        {review.authorAttribution.displayName || 'Customer'}
+                      </a>
+                    ) : (
+                      review.authorAttribution?.displayName || 'Customer'
+                    )}
+                  </strong>
+                  <span class="review-date">{review.relativePublishTimeDescription || 'Recently'}</span>
                 </div>
               </div>
               <div class="review-stars">
-                {Array.from({ length: review.rating }).map(() => (
+                {Array.from({ length: review.rating || 5 }).map(() => (
                   <span>★</span>
                 ))}
               </div>
               <p class="review-body">
-                "{review.text}"
+                "{review.text?.text || review.text}"
               </p>
             </div>
           ))}
@@ -161,8 +164,7 @@ if (reviewsData.length === 0) {
   }
   .stars {
     font-size: 2rem;
-    color: #FABB05; /* Google Yellow */
-    margin-bottom: 0.5rem;
+    color: #FABB05;
   }
   .rating-text {
     font-size: 1.1rem;
@@ -196,6 +198,12 @@ if (reviewsData.length === 0) {
     font-weight: bold;
     font-size: 1.2rem;
     text-transform: uppercase;
+  }
+  .reviewer-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
   }
   .reviewer-info {
     display: flex;

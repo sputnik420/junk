@@ -27,8 +27,12 @@ const dict = {
   }
 };
 const t = dict[lang];
+const routes = {
+  en: { home: '/', services: '/services/', contact: '/contact/', privacy: '/privacy/', terms: '/terms/' },
+  es: { home: '/es/', services: '/es/servicios/', contact: '/es/contacto/', privacy: '/es/privacidad/', terms: '/es/terminos/' }
+};
+const r = routes[lang];
 const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
-const prefix = lang === 'en' ? baseUrl : `${baseUrl}/es`;
 ---
 
 <footer class="footer">
@@ -45,10 +49,10 @@ const prefix = lang === 'en' ? baseUrl : `${baseUrl}/es`;
       <div class="footer-links">
         <h3>{t.about}</h3>
         <ul>
-          <li><a href={`${prefix}/#home`}>{t.about}</a></li>
-          <li><a href={`${prefix}/services/`}>{t.services}</a></li>
-          <li><a href={`${prefix}/#areas`}>{t.areas}</a></li>
-          <li><a href={`${prefix}/contact/`}>{t.contact}</a></li>
+          <li><a href={`${baseUrl}${r.home}#home`}>{t.about}</a></li>
+          <li><a href={`${baseUrl}${r.services}`}>{t.services}</a></li>
+          <li><a href={`${baseUrl}${r.home}#areas`}>{t.areas}</a></li>
+          <li><a href={`${baseUrl}${r.contact}`}>{t.contact}</a></li>
         </ul>
       </div>
       
@@ -79,8 +83,8 @@ const prefix = lang === 'en' ? baseUrl : `${baseUrl}/es`;
     <div class="footer-bottom">
       <p>&copy; {new Date().getFullYear()} {business.name}. {t.rights}</p>
       <div class="legal-links">
-        <a href={`${prefix}/privacy/`}>{t.privacy}</a>
-        <a href={`${prefix}/terms/`}>{t.terms}</a>
+        <a href={`${baseUrl}${r.privacy}`}>{t.privacy}</a>
+        <a href={`${baseUrl}${r.terms}`}>{t.terms}</a>
       </div>
     </div>
   </div>

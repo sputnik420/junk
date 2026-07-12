@@ -1,11 +1,11 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import { business } from '../data/business';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { business } from '../../data/business';
 
-const title = `Terms of Service | ${business.name}`;
-const lang = 'en';
+const title = "Términos de Servicio | ANSEB";
+const lang='es';
 ---
 
 <BaseLayout lang={lang} title={title}>
@@ -15,7 +15,7 @@ const lang = 'en';
     <div class="container" style="max-width: 800px; margin: 0 auto; background: var(--color-white); padding: 3rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
       <h1 class="mb-4">Terms of Service</h1>
       
-      <p class="mb-3">Last updated: {new Date().toLocaleDateString()}</p>
+      <p class="mb-3">Última actualización: 11 de julio de 2026
       
       <p class="mb-3">Welcome to {business.name}. By accessing or using our website and services, you agree to comply with and be bound by these Terms of Service.</p>
       

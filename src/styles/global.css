@@ -1,7 +1,8 @@
 /* src/styles/global.css */
 :root {
-  --color-primary-green: #5BA10E;
-  --color-bright-green: #89BC56;
+  --color-primary-green: #00E676;
+  --color-bright-green: #00C853;
+  --color-dark-green: #1B5E20;
   --color-deep-black: #050505;
   --color-soft-black: #131413;
   --color-dark-olive: #2F3826;
@@ -86,11 +87,11 @@ a:hover {
 
 .btn-primary {
   background-color: var(--color-primary-green);
-  color: var(--color-white);
+  color: var(--color-deep-black);
 }
 
 .btn-primary:hover {
-  background-color: var(--color-bright-green);
+  background-color: var(--color-dark-green);
   color: var(--color-white);
   transform: translateY(-1px);
   box-shadow: 0 4px 6px rgba(47, 56, 38, 0.15);
@@ -191,9 +192,5 @@ a:hover {
   border-width: 0;
 }
 
-/* Sticky Mobile CTA Compensation */
-@media (max-width: 768px) {
-  body {
-    padding-bottom: 80px; /* Space for the sticky CTA */
-  }
+
 }

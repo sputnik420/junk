@@ -14,7 +14,9 @@ const dict = {
     areas: "Service Areas",
     howItWorks: "How It Works",
     contact: "Contact",
-    callNow: "Call Now"
+    callNow: "Call Now",
+    menu: "Menu",
+    close: "Close Menu"
   },
   es: {
     home: "Inicio",
@@ -22,27 +24,34 @@ const dict = {
     areas: "Áreas de Servicio",
     howItWorks: "Cómo Funciona",
     contact: "Contacto",
-    callNow: "Llamar Ahora"
+    callNow: "Llamar Ahora",
+    menu: "Menú",
+    close: "Cerrar Menú"
   }
 };
 const t = dict[lang];
+
+const routes = {
+  en: { home: '/', services: '/services/', contact: '/contact/' },
+  es: { home: '/es/', services: '/es/servicios/', contact: '/es/contacto/' }
+};
+const r = routes[lang];
 const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
-const prefix = lang === 'en' ? baseUrl : `${baseUrl}/es`;
 ---
 
 <header class="header">
   <div class="container header-inner">
-    <a href={lang === 'en' ? (baseUrl + '/') : (baseUrl + '/es/')} class="logo-link">
+    <a href={`${baseUrl}${r.home}`} class="logo-link">
       <img src={business.logo} alt={`${business.name} Logo`} class="logo" />
     </a>
     
-    <nav class="desktop-nav">
+    <nav class="desktop-nav" aria-label="Main Navigation">
       <ul class="nav-links">
-        <li><a href={`${prefix}/#home`}>{t.home}</a></li>
-        <li><a href={`${prefix}/services/`}>{t.services}</a></li>
-        <li><a href={`${prefix}/#areas`}>{t.areas}</a></li>
-        <li><a href={`${prefix}/#how-it-works`}>{t.howItWorks}</a></li>
-        <li><a href={`${prefix}/contact/`}>{t.contact}</a></li>
+        <li><a href={`${baseUrl}${r.home}#home`}>{t.home}</a></li>
+        <li><a href={`${baseUrl}${r.services}`}>{t.services}</a></li>
+        <li><a href={`${baseUrl}${r.home}#areas`}>{t.areas}</a></li>
+        <li><a href={`${baseUrl}${r.home}#how-it-works`}>{t.howItWorks}</a></li>
+        <li><a href={`${baseUrl}${r.contact}`}>{t.contact}</a></li>
       </ul>
     </nav>
 
@@ -53,13 +62,32 @@ const prefix = lang === 'en' ? baseUrl : `${baseUrl}/es`;
       </a>
     </div>
 
-    <!-- Mobile Menu Toggle (simplified for static) -->
+    <!-- Mobile Menu Toggle -->
     <div class="mobile-actions">
       <LanguageSwitcher lang={lang} />
-      <a href={`tel:${business.phoneTel}`} class="btn btn-primary btn-small" data-cta="call" data-location="header-mobile">
-        Call
-      </a>
+      <button class="mobile-menu-btn" aria-expanded="false" aria-controls="mobile-nav" aria-label={t.menu}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-close" style="display: none;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
     </div>
+  </div>
+
+  <!-- Mobile Navigation overlay -->
+  <div class="mobile-nav-overlay" id="mobile-nav" hidden>
+    <nav class="mobile-nav" aria-label="Mobile Navigation">
+      <ul class="mobile-nav-links">
+        <li><a href={`${baseUrl}${r.home}#home`}>{t.home}</a></li>
+        <li><a href={`${baseUrl}${r.services}`}>{t.services}</a></li>
+        <li><a href={`${baseUrl}${r.home}#areas`}>{t.areas}</a></li>
+        <li><a href={`${baseUrl}${r.home}#how-it-works`}>{t.howItWorks}</a></li>
+        <li><a href={`${baseUrl}${r.contact}`}>{t.contact}</a></li>
+      </ul>
+      <div class="mobile-nav-cta">
+        <a href={`tel:${business.phoneTel}`} class="btn btn-primary btn-large" data-cta="call" data-location="mobile-menu">
+          {t.callNow}: {business.phoneDisplay}
+        </a>
+      </div>
+    </nav>
   </div>
 </header>
 
@@ -82,7 +110,7 @@ const prefix = lang === 'en' ? baseUrl : `${baseUrl}/es`;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 80px;
+    height: 70px;
     transition: all 0.4s ease;
   }
 
@@ -93,7 +121,7 @@ const prefix = lang === 'en' ? baseUrl : `${baseUrl}/es`;
   }
 
   .logo {
-    height: 50px;
+    height: 40px;
     width: auto;
     object-fit: contain;
     transition: height 0.4s ease;
@@ -131,9 +159,60 @@ const prefix = lang === 'en' ? baseUrl : `${baseUrl}/es`;
     align-items: center;
     gap: 0.75rem;
   }
-  .btn-small {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
+  
+  .mobile-menu-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-deep-black);
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Mobile Nav Overlay */
+  .mobile-nav-overlay {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-white);
+    border-bottom: 1px solid var(--color-soft-gray);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+  }
+  
+  .mobile-nav-overlay.open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .mobile-nav-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .mobile-nav-links a {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--color-deep-black);
+    display: block;
+  }
+  
+  .btn-large {
+    display: block;
+    text-align: center;
+    padding: 1rem;
+    font-size: 1.1rem;
   }
 
   /* DESKTOP STYLES */
@@ -152,25 +231,25 @@ const prefix = lang === 'en' ? baseUrl : `${baseUrl}/es`;
 
     /* Not Scrolled: Logo is large, centered, on top */
     .header:not(.scrolled) .header-inner {
-      height: 220px;
-      padding-top: 1.25rem;
+      height: 120px;
+      padding-top: 1rem;
       align-content: flex-start;
     }
     
     .header:not(.scrolled) .logo-link {
       flex: 0 0 100%;
       justify-content: center;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.5rem;
       order: -1;
     }
     
     .header:not(.scrolled) .logo {
-      height: 150px;
+      height: 90px;
     }
 
     /* Scrolled: Single row */
     .header.scrolled .header-inner {
-      height: 80px;
+      height: 75px;
       padding-top: 0;
       align-content: center;
     }
@@ -198,8 +277,53 @@ const prefix = lang === 'en' ? baseUrl : `${baseUrl}/es`;
     }
   };
 
-  // Initial check in case page is loaded already scrolled
   handleScroll();
-
   window.addEventListener('scroll', handleScroll, { passive: true });
+
+  // Mobile menu logic
+  const menuBtn = document.querySelector('.mobile-menu-btn');
+  const navOverlay = document.getElementById('mobile-nav');
+  const iconMenu = document.querySelector('.icon-menu');
+  const iconClose = document.querySelector('.icon-close');
+  const mobileLinks = document.querySelectorAll('.mobile-nav-links a');
+
+  function toggleMenu() {
+    const isExpanded = menuBtn?.getAttribute('aria-expanded') === 'true';
+    if (isExpanded) {
+      // Close
+      menuBtn?.setAttribute('aria-expanded', 'false');
+      navOverlay?.classList.remove('open');
+      setTimeout(() => navOverlay?.setAttribute('hidden', ''), 300);
+      iconMenu && ((iconMenu as HTMLElement).style.display = 'block');
+      iconClose && ((iconClose as HTMLElement).style.display = 'none');
+    } else {
+      // Open
+      navOverlay?.removeAttribute('hidden');
+      // trigger reflow
+      void navOverlay?.offsetWidth;
+      menuBtn?.setAttribute('aria-expanded', 'true');
+      navOverlay?.classList.add('open');
+      iconMenu && ((iconMenu as HTMLElement).style.display = 'none');
+      iconClose && ((iconClose as HTMLElement).style.display = 'block');
+    }
+  }
+
+  menuBtn?.addEventListener('click', toggleMenu);
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menuBtn?.getAttribute('aria-expanded') === 'true') {
+      toggleMenu();
+      (menuBtn as HTMLElement)?.focus();
+    }
+  });
+
+  // Close on link click
+  mobileLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      if (menuBtn?.getAttribute('aria-expanded') === 'true') {
+        toggleMenu();
+      }
+    });
+  });
 </script>

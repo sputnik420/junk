@@ -9,7 +9,29 @@ const { lang = 'en' } = Astro.props;
 const currentPath = Astro.url.pathname;
 const isEs = lang === 'es';
 const targetLang = isEs ? 'en' : 'es';
-const targetUrl = isEs ? business.languages.en : business.languages.es;
+
+// Get base path mapping
+const rawPath = currentPath.replace(import.meta.env.BASE_URL, '/').replace(/\/+/g, '/');
+
+const pathMap: Record<string, string> = {
+  '/': '/es/',
+  '/services/': '/es/servicios/',
+  '/contact/': '/es/contacto/',
+  '/privacy/': '/es/privacidad/',
+  '/terms/': '/es/terminos/',
+  '/es/': '/',
+  '/es/servicios/': '/services/',
+  '/es/contacto/': '/contact/',
+  '/es/privacidad/': '/privacy/',
+  '/es/terminos/': '/terms/'
+};
+
+// Ensure trailing slash for mapping match
+const normalizedPath = rawPath.endsWith('/') ? rawPath : rawPath + '/';
+let mappedPath = pathMap[normalizedPath] || (isEs ? '/' : '/es/');
+
+// Construct final target URL
+const targetUrl = (import.meta.env.BASE_URL + mappedPath.substring(1)).replace(/\/+/g, '/');
 ---
 
 <div class="language-switcher">

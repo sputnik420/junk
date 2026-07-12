@@ -10,7 +10,6 @@ import ServiceAreas from '../components/ServiceAreas.astro';
 import FAQ from '../components/FAQ.astro';
 import CTASection from '../components/CTASection.astro';
 import Footer from '../components/Footer.astro';
-import StickyMobileCTA from '../components/StickyMobileCTA.astro';
 import { business } from '../data/business';
 
 const lang = 'es';
@@ -46,6 +45,8 @@ const description = `¿Necesita remover basura en Houston, TX? ${business.name} 
               style="width: 100%; display: block;"
               width="960"
               height="540"
+              loading="lazy"
+              decoding="async"
             />
           </picture>
         </div>
@@ -65,7 +66,6 @@ const description = `¿Necesita remover basura en Houston, TX? ${business.name} 
   </main>
   
   <Footer lang={lang} />
-  <StickyMobileCTA lang={lang} />
 </BaseLayout>
 
 <script>
