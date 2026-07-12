@@ -1,6 +1,6 @@
 <?php
 // Secure Form Endpoint for ANSEB Junk Removal
-
+date_default_timezone_set('America/Chicago');
 header('Content-Type: application/json; charset=utf-8');
 
 // 1. CORS & Origin Validation
@@ -22,16 +22,40 @@ $allowed_origins = [
     'http://127.0.0.1:4321'
 ];
 
-$origin_raw = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['HTTP_REFERER'] ?? '';
-$origin_normalized = normalize_origin($origin_raw);
+$allowed_hosts = [
+    'ansebjunk.com',
+    'www.ansebjunk.com',
+    'localhost:4321',
+    '127.0.0.1:4321'
+];
+
+$origin_raw = $_SERVER['HTTP_ORIGIN'] ?? '';
+$referer_raw = $_SERVER['HTTP_REFERER'] ?? '';
+$host_raw = $_SERVER['HTTP_HOST'] ?? '';
 
 $is_allowed = false;
-if ($origin_normalized && in_array($origin_normalized, $allowed_origins, true)) {
-    $is_allowed = true;
+$origin_normalized = null;
+
+if (!empty($origin_raw)) {
+    $origin_normalized = normalize_origin($origin_raw);
+    if ($origin_normalized && in_array($origin_normalized, $allowed_origins, true)) {
+        $is_allowed = true;
+    }
+} elseif (!empty($referer_raw)) {
+    $origin_normalized = normalize_origin($referer_raw);
+    if ($origin_normalized && in_array($origin_normalized, $allowed_origins, true)) {
+        $is_allowed = true;
+    }
+} else {
+    // Validate HTTP_HOST explicitly
+    $normalizedHost = strtolower(trim($host_raw));
+    if (in_array($normalizedHost, $allowed_hosts, true)) {
+        $is_allowed = true;
+    }
+}
+
+if ($is_allowed && $origin_normalized) {
     header("Access-Control-Allow-Origin: $origin_normalized");
-} elseif (empty($_SERVER['HTTP_ORIGIN']) && empty($_SERVER['HTTP_REFERER'])) {
-    // Legitimate same-origin requests might not send Origin/Referer in some cases.
-    $is_allowed = true; 
 }
 
 if (!$is_allowed) {
@@ -84,8 +108,13 @@ if (!empty($honeypot)) {
 
 // 4. Anti-Spam Minimum Time Check
 $form_started_at = $_POST['form_started_at'] ?? '';
-if (!is_numeric($form_started_at) || (time() - (int)$form_started_at < 3)) {
-    // Submitted too quickly, act like success for bots
+if (!is_numeric($form_started_at)) {
+    http_response_code(200);
+    echo json_encode(['success' => true, 'message' => 'Success']);
+    exit;
+}
+$diff = time() - (int)$form_started_at;
+if ($diff < 3 || $diff > 86400 || $diff < 0) { // < 3s, > 24h, or future
     http_response_code(200);
     echo json_encode(['success' => true, 'message' => 'Success']);
     exit;
@@ -93,13 +122,13 @@ if (!is_numeric($form_started_at) || (time() - (int)$form_started_at < 3)) {
 
 // 5. Sanitize and Validate Inputs
 function clean_input($data, $max_len = 1000) {
-    $data = trim($data);
+    $data = trim((string)$data);
     $data = substr($data, 0, $max_len);
     return htmlspecialchars(strip_tags($data), ENT_QUOTES, 'UTF-8');
 }
 
 function clean_header($data) {
-    return str_replace(["\r", "\n", "%0a", "%0d"], '', trim($data));
+    return str_replace(["\r", "\n", "%0a", "%0d"], '', trim((string)$data));
 }
 
 $name = clean_header(clean_input($_POST['name'] ?? '', 150));
@@ -110,10 +139,12 @@ $serviceType = clean_header(clean_input($_POST['serviceType'] ?? '', 100));
 $date = clean_header(clean_input($_POST['date'] ?? '', 20));
 $desc = clean_input($_POST['desc'] ?? '', 5000);
 $consent = $_POST['consent'] ?? '';
-$lang = clean_header(clean_input($_POST['lang'] ?? 'en', 10));
+$lang = clean_header(clean_input($_POST['lang'] ?? '', 10));
 
-if ($lang !== 'en' && $lang !== 'es') {
-    $lang = 'en';
+if (!in_array($lang, ['en', 'es'], true)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Invalid language.']);
+    exit;
 }
 
 if (empty($name) || strlen($name) < 2) {
@@ -166,14 +197,17 @@ if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
 }
 
 if (!empty($date)) {
-    $dt = DateTime::createFromFormat('Y-m-d', $date);
-    if (!$dt || $dt->format('Y-m-d') !== $date) {
+    $timezone = new DateTimeZone('America/Chicago');
+    $dt = DateTime::createFromFormat('!Y-m-d', $date, $timezone);
+    $errors = DateTime::getLastErrors();
+    
+    if (!$dt || ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0)) || $dt->format('Y-m-d') !== $date) {
         http_response_code(400);
-        echo json_encode(['success' => false, 'message' => 'Invalid date format.']);
+        echo json_encode(['success' => false, 'message' => 'Invalid date format or value.']);
         exit;
     }
-    $today = new DateTime('today');
-    $dt->setTime(0, 0, 0);
+    
+    $today = new DateTime('today', $timezone);
     if ($dt < $today) {
         http_response_code(400);
         echo json_encode(['success' => false, 'message' => 'Date cannot be in the past.']);
@@ -193,17 +227,76 @@ $max_total_size = 12 * 1024 * 1024; // 12MB
 $total_size = 0;
 $valid_files = [];
 
-$finfo = finfo_open(FILEINFO_MIME_TYPE);
+// Count files
+$upload_count = 0;
+foreach ($_FILES as $key => $file) {
+    if (is_array($file['error'])) {
+        // We do not allow array uploads like photos[]
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Array uploads are not allowed.']);
+        exit;
+    }
+    if ($file['error'] !== UPLOAD_ERR_NO_FILE) {
+        $upload_count++;
+        if (!in_array($key, ['photo0', 'photo1', 'photo2'], true)) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Invalid file key uploaded.']);
+            exit;
+        }
+    }
+}
 
-for ($i = 0; $i < 3; $i++) {
-    $fileKey = "photo$i";
-    if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+if ($upload_count > 3) {
+    http_response_code(413);
+    echo json_encode(['success' => false, 'message' => 'A maximum of 3 images is allowed.']);
+    exit;
+}
+
+$finfo = finfo_open(FILEINFO_MIME_TYPE);
+if (!$finfo) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Server misconfiguration (finfo).']);
+    exit;
+}
+
+$valid_keys = ['photo0', 'photo1', 'photo2'];
+foreach ($valid_keys as $fileKey) {
+    if (isset($_FILES[$fileKey])) {
+        $error = $_FILES[$fileKey]['error'];
+        
+        if ($error === UPLOAD_ERR_NO_FILE) {
+            continue;
+        }
+        
+        if ($error !== UPLOAD_ERR_OK) {
+            if (in_array($error, [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE])) {
+                http_response_code(413);
+                echo json_encode(['success' => false, 'message' => 'File exceeds allowed size limit.']);
+            } elseif (in_array($error, [UPLOAD_ERR_PARTIAL, UPLOAD_ERR_EXTENSION])) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => 'File upload was partial or invalid.']);
+            } else {
+                http_response_code(500);
+                echo json_encode(['success' => false, 'message' => 'Internal server error processing file.']);
+            }
+            finfo_close($finfo);
+            exit;
+        }
+
         $tmp_path = $_FILES[$fileKey]['tmp_name'];
+        if (!is_uploaded_file($tmp_path) || !is_readable($tmp_path)) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Invalid uploaded file.']);
+            finfo_close($finfo);
+            exit;
+        }
+
         $size = $_FILES[$fileKey]['size'];
         
         if ($size > $max_file_size) {
             http_response_code(413);
             echo json_encode(['success' => false, 'message' => "File exceeds 5MB limit."]);
+            finfo_close($finfo);
             exit;
         }
 
@@ -211,14 +304,15 @@ for ($i = 0; $i < 3; $i++) {
         if ($total_size > $max_total_size) {
             http_response_code(413);
             echo json_encode(['success' => false, 'message' => 'Total file size exceeds 12MB.']);
+            finfo_close($finfo);
             exit;
         }
 
         $real_mime = finfo_file($finfo, $tmp_path);
-        
-        if (!array_key_exists($real_mime, $allowed_mime)) {
+        if ($real_mime === false || !array_key_exists($real_mime, $allowed_mime)) {
             http_response_code(400);
             echo json_encode(['success' => false, 'message' => 'Invalid file type. Only JPG, PNG, and WEBP allowed.']);
+            finfo_close($finfo);
             exit;
         }
 
@@ -237,8 +331,8 @@ finfo_close($finfo);
 
 // 7. Email Formatting
 $to = 'info@ansebjunk.com';
-$subject = "New Estimate Request from $name";
-$boundary = md5(time());
+$subject = "New Estimate Request from " . substr($name, 0, 50);
+$boundary = '=_ANSEB_' . bin2hex(random_bytes(16));
 
 $headers = "From: ANSEB Junk Removal <info@ansebjunk.com>\r\n";
 if (!empty($email)) {
@@ -290,4 +384,5 @@ if ($mail_success) {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Internal server error while sending email.']);
 }
+
 
