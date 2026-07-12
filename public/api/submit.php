@@ -4,6 +4,17 @@
 header('Content-Type: application/json; charset=utf-8');
 
 // 1. CORS & Origin Validation
+function normalize_origin(string $url): ?string {
+    $parts = parse_url($url);
+    if (!$parts || empty($parts['scheme']) || empty($parts['host'])) {
+        return null;
+    }
+    $scheme = strtolower($parts['scheme']);
+    $host = strtolower($parts['host']);
+    $port = isset($parts['port']) ? ':' . $parts['port'] : '';
+    return $scheme . '://' . $host . $port;
+}
+
 $allowed_origins = [
     'https://ansebjunk.com',
     'https://www.ansebjunk.com',
@@ -11,18 +22,19 @@ $allowed_origins = [
     'http://127.0.0.1:4321'
 ];
 
-$origin = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['HTTP_REFERER'] ?? '';
+$origin_raw = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['HTTP_REFERER'] ?? '';
+$origin_normalized = normalize_origin($origin_raw);
+
 $is_allowed = false;
-foreach ($allowed_origins as $allowed) {
-    if (strpos($origin, $allowed) === 0) {
-        $is_allowed = true;
-        header("Access-Control-Allow-Origin: $allowed");
-        break;
-    }
+if ($origin_normalized && in_array($origin_normalized, $allowed_origins, true)) {
+    $is_allowed = true;
+    header("Access-Control-Allow-Origin: $origin_normalized");
+} elseif (empty($_SERVER['HTTP_ORIGIN']) && empty($_SERVER['HTTP_REFERER'])) {
+    // Legitimate same-origin requests might not send Origin/Referer in some cases.
+    $is_allowed = true; 
 }
 
-// Strictly, if we are in production, we could block external domains
-if (!$is_allowed && $origin !== '') {
+if (!$is_allowed) {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'Forbidden origin.']);
     exit;
@@ -34,22 +46,32 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// 2. Basic Rate Limiting
+// 2. Rate Limiting with probabilistic cleanup
 $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 $ip_hash = hash('sha256', $ip);
 $tmp_dir = sys_get_temp_dir();
 $rate_file = $tmp_dir . '/anseb_rate_' . $ip_hash . '.txt';
 
+// Cleanup old rate files probabilistically (5% chance)
+if (random_int(1, 100) <= 5) {
+    foreach (glob($tmp_dir . '/anseb_rate_*.txt') as $file) {
+        if (is_file($file) && filemtime($file) < time() - 86400) {
+            @unlink($file);
+        }
+    }
+}
+
 if (file_exists($rate_file)) {
-    $last_time = (int)file_get_contents($rate_file);
+    $last_time = (int)@file_get_contents($rate_file);
     // Allow 1 request per 30 seconds
-    if (time() - $last_time < 30) {
+    if ($last_time && time() - $last_time < 30) {
         http_response_code(429);
         echo json_encode(['success' => false, 'message' => 'Too Many Requests. Please wait before submitting again.']);
         exit;
     }
 }
-file_put_contents($rate_file, time());
+// Try to write, but don't block if tmp is unwritable
+@file_put_contents($rate_file, time(), LOCK_EX);
 
 // 3. Honeypot check
 $honeypot = $_POST['website_url'] ?? '';
@@ -60,14 +82,22 @@ if (!empty($honeypot)) {
     exit;
 }
 
-// 4. Sanitize and Validate Inputs
+// 4. Anti-Spam Minimum Time Check
+$form_started_at = $_POST['form_started_at'] ?? '';
+if (!is_numeric($form_started_at) || (time() - (int)$form_started_at < 3)) {
+    // Submitted too quickly, act like success for bots
+    http_response_code(200);
+    echo json_encode(['success' => true, 'message' => 'Success']);
+    exit;
+}
+
+// 5. Sanitize and Validate Inputs
 function clean_input($data, $max_len = 1000) {
     $data = trim($data);
     $data = substr($data, 0, $max_len);
     return htmlspecialchars(strip_tags($data), ENT_QUOTES, 'UTF-8');
 }
 
-// Block header injection
 function clean_header($data) {
     return str_replace(["\r", "\n", "%0a", "%0d"], '', trim($data));
 }
@@ -82,19 +112,29 @@ $desc = clean_input($_POST['desc'] ?? '', 5000);
 $consent = $_POST['consent'] ?? '';
 $lang = clean_header(clean_input($_POST['lang'] ?? 'en', 10));
 
-if (empty($name) || empty($phone) || empty($zip) || empty($serviceType) || empty($desc)) {
+if ($lang !== 'en' && $lang !== 'es') {
+    $lang = 'en';
+}
+
+if (empty($name) || strlen($name) < 2) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Please fill in all required fields.']);
+    echo json_encode(['success' => false, 'message' => 'Invalid name.']);
     exit;
 }
 
-if ($consent !== 'on') {
+$phone_digits = preg_replace('/\D+/', '', $phone);
+if (strlen($phone_digits) < 10 || strlen($phone_digits) > 15) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Consent is required.']);
+    echo json_encode(['success' => false, 'message' => 'Invalid phone number.']);
     exit;
 }
 
-// Valid service types
+if (!preg_match('/^\d{5}(-\d{4})?$/', $zip)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Invalid ZIP code.']);
+    exit;
+}
+
 $valid_services = [
     'furniture-removal', 'appliance-removal', 'garage-cleanout',
     'house-cleanout', 'apartment-cleanout', 'yard-waste',
@@ -106,13 +146,42 @@ if (!in_array($serviceType, $valid_services)) {
     exit;
 }
 
+if (empty($desc) || strlen(trim($desc)) < 5) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Description is too short.']);
+    exit;
+}
+
+$valid_consents = ['on', '1', 'true', 'yes'];
+if (!in_array(strtolower($consent), $valid_consents, true)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Consent is required.']);
+    exit;
+}
+
 if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Invalid email address.']);
     exit;
 }
 
-// 5. File Validation using finfo
+if (!empty($date)) {
+    $dt = DateTime::createFromFormat('Y-m-d', $date);
+    if (!$dt || $dt->format('Y-m-d') !== $date) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Invalid date format.']);
+        exit;
+    }
+    $today = new DateTime('today');
+    $dt->setTime(0, 0, 0);
+    if ($dt < $today) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Date cannot be in the past.']);
+        exit;
+    }
+}
+
+// 6. File Validation using finfo
 $allowed_mime = [
     'image/jpeg' => 'jpg',
     'image/png'  => 'png',
@@ -134,7 +203,7 @@ for ($i = 0; $i < 3; $i++) {
         
         if ($size > $max_file_size) {
             http_response_code(413);
-            echo json_encode(['success' => false, 'message' => "File $fileKey exceeds 5MB limit."]);
+            echo json_encode(['success' => false, 'message' => "File exceeds 5MB limit."]);
             exit;
         }
 
@@ -166,7 +235,7 @@ for ($i = 0; $i < 3; $i++) {
 }
 finfo_close($finfo);
 
-// 6. Email Formatting
+// 7. Email Formatting
 $to = 'info@ansebjunk.com';
 $subject = "New Estimate Request from $name";
 $boundary = md5(time());
@@ -211,7 +280,7 @@ foreach ($valid_files as $vf) {
 
 $body .= "--$boundary--\r\n";
 
-// 7. Send Email
+// 8. Send Email
 $mail_success = @mail($to, $subject, $body, $headers);
 
 if ($mail_success) {
@@ -221,3 +290,4 @@ if ($mail_success) {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Internal server error while sending email.']);
 }
+

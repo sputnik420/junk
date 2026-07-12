@@ -13,7 +13,15 @@ const dict = {
     leaveReview: "Leave a Review",
     readReviews: "Read Our Google Reviews",
     neutralTitle: "Find ANSEB Junk Removal on Google",
-    neutralText: "Visit our Google Business Profile for the latest business information and customer feedback."
+    neutralText: "Visit our Google Business Profile for the latest business information and customer feedback.",
+    basedOn: "based on",
+    reviewsLabel: "reviews",
+    reviewSingleLabel: "review",
+    customerFallback: "Customer",
+    recently: "Recently",
+    outOfFive: "out of 5",
+    rated: "Rated",
+    outOf: "out of"
   },
   es: {
     title: "Recomendado por Clientes Locales",
@@ -21,7 +29,15 @@ const dict = {
     leaveReview: "Déjanos una Reseña",
     readReviews: "Leer Reseñas en Google",
     neutralTitle: "Encuentre ANSEB Junk Removal en Google",
-    neutralText: "Visite nuestro perfil de Google para consultar la información más reciente del negocio y las opiniones disponibles."
+    neutralText: "Visite nuestro perfil de Google para consultar la información más reciente del negocio y las opiniones disponibles.",
+    basedOn: "basado en",
+    reviewsLabel: "reseñas",
+    reviewSingleLabel: "reseña",
+    customerFallback: "Cliente",
+    recently: "Recientemente",
+    outOfFive: "de 5",
+    rated: "Calificación de",
+    outOf: "de"
   }
 };
 const t = dict[lang];
@@ -94,11 +110,13 @@ if (showGoogleReviews && googlePlaceId) {
       <div class="real-reviews">
         <h2 class="mb-4">{t.title}</h2>
         <div class="rating-summary mb-4">
-          <div class="stars">
-            <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+          <div class="stars" aria-label={`${t.rated} ${googleRating} ${t.outOfFive}`}>
+            <div class="stars-outer">
+              <div class="stars-inner" style={`width: ${(googleRating / 5) * 100}%`}></div>
+            </div>
           </div>
           <p class="rating-text">
-            <strong>{googleRating}</strong> / 5.0 based on <strong>{googleReviewCount}</strong> reviews
+            <strong>{googleRating}</strong> {t.outOfFive} {t.basedOn} <strong>{googleReviewCount}</strong> {googleReviewCount === 1 ? t.reviewSingleLabel : t.reviewsLabel}
           </p>
         </div>
 
@@ -110,7 +128,7 @@ if (showGoogleReviews && googlePlaceId) {
                   <img src={review.authorAttribution.photoUri} alt={review.authorAttribution.displayName} class="reviewer-img" loading="lazy" decoding="async" width="40" height="40" />
                 ) : (
                   <div class="reviewer-initial">
-                    {review.authorAttribution?.displayName ? review.authorAttribution.displayName.charAt(0) : 'C'}
+                    {review.authorAttribution?.displayName ? review.authorAttribution.displayName.charAt(0) : t.customerFallback.charAt(0)}
                   </div>
                 )}
                 
@@ -118,19 +136,19 @@ if (showGoogleReviews && googlePlaceId) {
                   <strong>
                     {review.authorAttribution?.uri ? (
                       <a href={review.authorAttribution.uri} target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">
-                        {review.authorAttribution.displayName || 'Customer'}
+                        {review.authorAttribution.displayName || t.customerFallback}
                       </a>
                     ) : (
-                      review.authorAttribution?.displayName || 'Customer'
+                      review.authorAttribution?.displayName || t.customerFallback
                     )}
                   </strong>
-                  <span class="review-date">{review.relativePublishTimeDescription || 'Recently'}</span>
+                  <span class="review-date">{review.relativePublishTimeDescription || t.recently}</span>
                 </div>
               </div>
-              <div class="review-stars">
-                {Array.from({ length: review.rating || 5 }).map(() => (
-                  <span>★</span>
-                ))}
+              <div class="review-stars" aria-label={`${t.rated} ${review.rating} ${t.outOfFive}`}>
+                <div class="stars-outer" style="font-size: 1.1rem; color: #ccc;">
+                  <div class="stars-inner" style={`width: ${(review.rating / 5) * 100}%; color: #FABB05;`}></div>
+                </div>
               </div>
               <p class="review-body">
                 "{review.text?.text || review.text}"
@@ -164,7 +182,27 @@ if (showGoogleReviews && googlePlaceId) {
   }
   .stars {
     font-size: 2rem;
+    color: #ccc;
+    display: inline-block;
+  }
+  .stars-outer {
+    display: inline-block;
+    position: relative;
+    font-family: 'Times New Roman', Times, serif; /* Better star glyph rendering */
+  }
+  .stars-outer::before {
+    content: "\u2605 \u2605 \u2605 \u2605 \u2605";
+  }
+  .stars-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
     color: #FABB05;
+  }
+  .stars-inner::before {
+    content: "\u2605 \u2605 \u2605 \u2605 \u2605";
   }
   .rating-text {
     font-size: 1.1rem;

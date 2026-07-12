@@ -79,15 +79,15 @@ const ogImageUrl = `${site}${ogImage}`;
     <meta name="twitter:image" content={ogImageUrl} />
 
     {/* LocalBusiness Schema */}
-    <script type="application/ld+json" set:html={JSON.stringify({
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
       "@id": "https://ansebjunk.com/#business",
       "name": business.name,
       "url": business.domain,
-      "telephone": business.phoneDisplay,
+      "telephone": business.phoneTel,
       "email": business.email,
-      "logo": `${site}${business.logo}`,
+      "logo": business.logo.startsWith('http') ? business.logo : `${site}${business.logo.startsWith('/') ? '' : '/'}${business.logo}`,
       "image": `${site}/images/og-share.jpg`,
       "areaServed": business.serviceArea.map(area => ({
         "@type": "City",
@@ -95,12 +95,12 @@ const ogImageUrl = `${site}${ogImage}`;
       })),
       "serviceType": "Junk Removal",
       "sameAs": [
-        business.googleBusinessProfileUrl
-        // Add Facebook or other confirmed profiles here if available
-      ],
+        business.googleBusinessProfileUrl,
+        business.facebookUrl
+      ].filter(Boolean),
       "contactPoint": {
         "@type": "ContactPoint",
-        "telephone": business.phoneDisplay,
+        "telephone": business.phoneTel,
         "contactType": "customer service",
         "areaServed": "US",
         "availableLanguage": ["English", "Spanish"]

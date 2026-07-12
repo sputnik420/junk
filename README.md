@@ -4,7 +4,7 @@ This repository contains the source code for the official ANSEB Junk Removal web
 
 ## Technology
 
-- **Framework**: Astro 5 (Static Site Generation)
+- **Framework**: Astro 7 (Static Site Generation)
 - **UI Components**: React 19
 - **Styling**: Vanilla CSS (global.css)
 - **Backend Endpoint**: PHP (For email submission via HostGator)
@@ -18,13 +18,16 @@ This repository contains the source code for the official ANSEB Junk Removal web
 
 Note: The PHP endpoint (`public/api/submit.php`) will not function using Astro's built-in dev server. To test the form locally, you must run it on a PHP-enabled local server (e.g., XAMPP, MAMP, or `php -S localhost:8000`).
 
-## Environment Variables
+## Environment Variables / GitHub Secrets
 
-For local development and deployment, you will need the following variables:
+For local development and GitHub Actions deployment, you will need the following variables/secrets:
 
 - `GMAPAPI`: Your Google Places API Key (v1) used during the build step to fetch reviews.
+- `FTP_SERVER`: The hostname or IP for the HostGator FTP server.
+- `FTP_USERNAME`: The FTP username.
+- `FTP_PASSWORD`: The FTP password.
 
-Do **NOT** commit `.env` files with the real key. It is stored securely in GitHub Secrets.
+Do **NOT** commit `.env` files with real keys or credentials. They should be stored securely in GitHub Secrets.
 
 ## Build and Validations
 
