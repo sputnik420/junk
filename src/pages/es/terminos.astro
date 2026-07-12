@@ -4,37 +4,67 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { business } from '../../data/business';
 
-const title = "Términos de Servicio | ANSEB";
-const lang='es';
+const title = 'Términos de Servicio | ANSEB Junk Removal';
+const description = 'Términos de servicio para ANSEB Junk Removal en Houston, TX. Lea sobre nuestras condiciones de servicio, precios y responsabilidades.';
+const lang = 'es';
 ---
 
-<BaseLayout lang={lang} title={title}>
+<BaseLayout 
+  lang={lang} 
+  title={title}
+  description={description}
+  canonicalPath="/es/terminos/"
+  alternatePath="/terms/"
+>
   <Header lang={lang} />
   
   <main class="section">
-    <div class="container" style="max-width: 800px; margin: 0 auto; background: var(--color-white); padding: 3rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-      <h1 class="mb-4">Terms of Service</h1>
+    <div class="container" style="max-width: 800px;">
+      <h1>Términos de Servicio</h1>
+      <p>Última actualización: 11 de julio de 2026</p>
       
-      <p class="mb-3">Última actualización: 11 de julio de 2026
+      <p style="margin-top: 1.5rem;">
+        Al acceder o utilizar los servicios de ANSEB Junk Removal ("nosotros", "nuestro"), usted acepta cumplir y estar sujeto a estos Términos de Servicio.
+      </p>
+
+      <h2 style="margin-top: 2.5rem;">Servicios</h2>
+      <p>
+        ANSEB Junk Removal ofrece servicios de retiro de artículos no deseados, limpieza de propiedades, recolección de muebles y escombros. Nos reservamos el derecho de rechazar cualquier servicio, incluyendo la recolección de materiales peligrosos (pinturas, químicos, asbesto, llantas, etc.).
+      </p>
+
+      <h2 style="margin-top: 2.5rem;">Estimados</h2>
+      <p>
+        Los estimados proporcionados por teléfono, texto, correo electrónico o formulario en línea son cotizaciones preliminares basadas en la información y fotografías proporcionadas por el cliente.
+      </p>
       
-      <p class="mb-3">Welcome to {business.name}. By accessing or using our website and services, you agree to comply with and be bound by these Terms of Service.</p>
+      <h2 style="margin-top: 2.5rem;">Precio Final Confirmado Antes de Cargar</h2>
+      <p>
+        El precio final exacto siempre será confirmado físicamente en el lugar <strong>antes</strong> de cargar los artículos. Si la cantidad de basura o el volumen difieren de las fotografías proporcionadas, el precio puede ajustarse. El cliente siempre deberá aprobar el precio final antes de que comience el trabajo.
+      </p>
+
+      <h2 style="margin-top: 2.5rem;">Responsabilidades del Cliente</h2>
+      <p>
+        El cliente garantiza que tiene la propiedad legal o la autorización para desechar los artículos proporcionados. Usted es responsable de proporcionar un acceso seguro a su propiedad.
+      </p>
       
-      <h2 class="mt-4 mb-3">1. Services</h2>
-      <p class="mb-3">We provide junk removal and hauling services. The scope of work, pricing, and scheduling will be agreed upon before any services are rendered.</p>
-      
-      <h2 class="mt-4 mb-3">2. Estimates</h2>
-      <p class="mb-3">Estimates provided via phone, text, or email are based on the information and photos provided. Final pricing will be confirmed on-site before we begin loading.</p>
-      
-      <h2 class="mt-4 mb-3">3. User Responsibilities</h2>
-      <p class="mb-3">You agree that you have the right and authority to dispose of all items you ask us to remove. We are not responsible for items mistakenly identified as junk by the customer.</p>
-      
-      <h2 class="mt-4 mb-3">4. Limitation of Liability</h2>
-      <p class="mb-3">{business.name} is not liable for indirect, incidental, or consequential damages arising from the use of our services.</p>
-      
-      <h2 class="mt-4 mb-3">Contact Us</h2>
-      <p class="mb-3">If you have any questions about these Terms, please contact us at:</p>
-      <p class="mb-1"><strong>Phone:</strong> {business.phoneDisplay}</p>
-      <p class="mb-3"><strong>Email:</strong> {business.email}</p>
+      <h2 style="margin-top: 2.5rem;">Artículos que el Cliente Autoriza Retirar</h2>
+      <p>
+        El cliente asume toda la responsabilidad de identificar claramente qué artículos deben ser retirados. No nos hacemos responsables por artículos que se nos indique retirar accidentalmente por parte del cliente.
+      </p>
+
+      <h2 style="margin-top: 2.5rem;">Limitación de Responsabilidad</h2>
+      <p>
+        Aunque tomamos el máximo cuidado al remover sus artículos, ANSEB Junk Removal no será responsable por daños preexistentes en su propiedad. Nuestra máxima responsabilidad por cualquier daño comprobado que resulte directamente de nuestra negligencia se limitará al costo total del servicio facturado.
+      </p>
+
+      <h2 style="margin-top: 2.5rem;">Comuníquese con Nosotros</h2>
+      <p>
+        Si tiene alguna pregunta sobre estos Términos, por favor comuníquese con nosotros:
+      </p>
+      <ul style="list-style: none; margin-left: 0;">
+        <li><strong>Teléfono:</strong> {business.phoneDisplay}</li>
+        <li><strong>Email:</strong> {business.email}</li>
+      </ul>
     </div>
   </main>
   

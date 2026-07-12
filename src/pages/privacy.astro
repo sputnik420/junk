@@ -4,11 +4,18 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { business } from '../data/business';
 
-const title = `Privacy Policy | ${business.name}`;
+const title = 'Privacy Policy | ANSEB Junk Removal';
+const description = 'Privacy policy for ANSEB Junk Removal. Learn how we collect, use, and protect your information when you request a junk removal estimate in Houston, TX.';
 const lang = 'en';
 ---
 
-<BaseLayout lang={lang} title={title}>
+<BaseLayout 
+  lang={lang} 
+  title={title}
+  description={description}
+  canonicalPath="/privacy/"
+  alternatePath="/es/privacidad/"
+>
   <Header lang={lang} />
   
   <main class="section">

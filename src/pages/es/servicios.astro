@@ -7,18 +7,25 @@ import CTASection from '../../components/CTASection.astro';
 import { business } from '../../data/business';
 
 const title = "Servicios de Retiro en Houston | ANSEB";
-const lang='es';
+const description = "Retiro de muebles, electrodomésticos, basura de garaje, artículos no deseados, desechos de jardín y escombros ligeros en el área de Houston.";
+const lang = 'es';
 ---
 
-<BaseLayout lang={lang} title={title}>
+<BaseLayout 
+  lang={lang} 
+  title={title}
+  description={description}
+  canonicalPath="/es/servicios/"
+  alternatePath="/services/"
+>
   <Header lang={lang} />
   
   <main>
     <section class="section section-gray">
       <div class="container text-center">
-        <h1>Junk Removal Services</h1>
+        <h1>Servicios de Retiro de Basura en Houston, TX</h1>
         <p style="font-size: 1.1rem; max-width: 600px; margin: 0 auto; color: var(--color-soft-black);">
-          We offer a full range of junk removal services for residential and commercial customers.
+          Ofrecemos una gama completa de servicios de retiro de basura, muebles y escombros para clientes residenciales y comerciales.
         </p>
       </div>
     </section>

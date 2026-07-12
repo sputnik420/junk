@@ -21,13 +21,27 @@ jobs:
           node-version: "22"
           cache: "npm"
 
+      - name: Install PHP for syntax check
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          
       - name: Install dependencies
         run: npm ci
+        
+      - name: Astro Check
+        run: npm run check
 
       - name: Build Astro Site
         run: npm run build
         env:
           GMAPAPI: ${{ secrets.GMAPAPI }}
+          
+      - name: Validate Build
+        run: npm run validate:build
+        
+      - name: Validate PHP syntax
+        run: php -l public/api/submit.php
 
       - name: Sync files via FTP to HostGator
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4

@@ -1,17 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 interface Props {
   lang?: 'en' | 'es';
 }
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_TOTAL_SIZE = 12 * 1024 * 1024; // 12MB
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export default function EstimateForm({ lang = 'en' }: Props) {
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   
-  // Photo states
   const [photos, setPhotos] = useState<(File | null)[]>([null]);
   
+  const fileInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
   const dict = {
     en: {
       title: "Get a Free Estimate",
@@ -31,10 +36,22 @@ export default function EstimateForm({ lang = 'en' }: Props) {
       photoLabel: "Upload Photo",
       addPhoto: "+ Add Another Photo",
       addMorePhotosLimit: "You can upload up to 3 photos here. If you have more, please email them to us directly after submitting this form.",
+      invalidFileType: "Only JPEG, PNG and WebP images are allowed.",
+      fileTooLarge: "Each image must be under 5MB.",
+      totalTooLarge: "Total size of all images cannot exceed 12MB.",
+      invalidZip: "Please enter a valid 5-digit or 9-digit US ZIP Code.",
+      invalidPhone: "Please enter a valid phone number.",
+      invalidDate: "Date cannot be in the past.",
       services: [
-        "Furniture Removal", "Appliance Removal", "Garage Cleanout", 
-        "House Cleanout", "Apartment Cleanout", "Yard Waste Removal", 
-        "Construction Debris", "Commercial Junk Removal", "Other"
+        { id: "furniture-removal", label: "Furniture Removal" },
+        { id: "appliance-removal", label: "Appliance Removal" },
+        { id: "garage-cleanout", label: "Garage Cleanout" },
+        { id: "house-cleanout", label: "House Cleanout" },
+        { id: "apartment-cleanout", label: "Apartment Cleanout" },
+        { id: "yard-waste", label: "Yard Waste Removal" },
+        { id: "construction-debris", label: "Construction Debris" },
+        { id: "commercial-junk", label: "Commercial Junk Removal" },
+        { id: "other", label: "Other" }
       ]
     },
     es: {
@@ -55,10 +72,22 @@ export default function EstimateForm({ lang = 'en' }: Props) {
       photoLabel: "Subir Foto",
       addPhoto: "+ Añadir Otra Foto",
       addMorePhotosLimit: "Puedes subir hasta 3 fotos aquí. Si tienes más, por favor envíanoslas directamente por correo después de enviar este formulario.",
+      invalidFileType: "Solo se permiten imágenes JPEG, PNG y WebP.",
+      fileTooLarge: "Cada imagen debe pesar menos de 5MB.",
+      totalTooLarge: "El peso total de las imágenes no puede superar los 12MB.",
+      invalidZip: "Por favor, introduzca un Código Postal de EE.UU. válido de 5 o 9 dígitos.",
+      invalidPhone: "Por favor, introduzca un número de teléfono válido.",
+      invalidDate: "La fecha no puede estar en el pasado.",
       services: [
-        "Retiro de Muebles", "Retiro de Electrodomésticos", "Limpieza de Garaje", 
-        "Limpieza de Casa", "Limpieza de Apartamento", "Desechos de Jardín", 
-        "Escombros de Construcción", "Retiro Comercial", "Otro"
+        { id: "furniture-removal", label: "Retiro de Muebles" },
+        { id: "appliance-removal", label: "Retiro de Electrodomésticos" },
+        { id: "garage-cleanout", label: "Limpieza de Garaje" },
+        { id: "house-cleanout", label: "Limpieza de Casa" },
+        { id: "apartment-cleanout", label: "Limpieza de Apartamento" },
+        { id: "yard-waste", label: "Desechos de Jardín" },
+        { id: "construction-debris", label: "Escombros de Construcción" },
+        { id: "commercial-junk", label: "Retiro Comercial" },
+        { id: "other", label: "Otro" }
       ]
     }
   };
@@ -66,9 +95,35 @@ export default function EstimateForm({ lang = 'en' }: Props) {
   const t = dict[lang];
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    if (e.target.files && e.target.files.length > 0) {
+    setErrorMsg('');
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+        setErrorMsg(t.invalidFileType);
+        e.target.value = '';
+        return;
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        setErrorMsg(t.fileTooLarge);
+        e.target.value = '';
+        return;
+      }
+
       const newPhotos = [...photos];
-      newPhotos[index] = e.target.files[0];
+      newPhotos[index] = file;
+
+      // Check total size
+      const totalSize = newPhotos.reduce((acc, curr) => acc + (curr ? curr.size : 0), 0);
+      if (totalSize > MAX_TOTAL_SIZE) {
+        setErrorMsg(t.totalTooLarge);
+        e.target.value = '';
+        return;
+      }
+
+      setPhotos(newPhotos);
+    } else {
+      const newPhotos = [...photos];
+      newPhotos[index] = null;
       setPhotos(newPhotos);
     }
   };
@@ -77,30 +132,57 @@ export default function EstimateForm({ lang = 'en' }: Props) {
     if (photos.length < 3) {
       setPhotos([...photos, null]);
     } else {
-      alert(t.addMorePhotosLimit);
-      window.location.href = "mailto:info@ansebjunk.com?subject=Additional%20Photos%20for%20Estimate";
+      setErrorMsg(t.addMorePhotosLimit);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
-    setErrorMsg('');
+    if (isLoading) return;
 
+    setErrorMsg('');
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    // Append photos manually if needed, but since we have inputs in the form, 
-    // FormData should already pick them up if they have correct 'name' attributes.
-    // However, to be safe, let's explicitly add the state files:
+    // Validate ZIP
+    const zipStr = formData.get('zip') as string;
+    if (!/^\d{5}(-\d{4})?$/.test(zipStr)) {
+      setErrorMsg(t.invalidZip);
+      return;
+    }
+
+    // Validate Phone (basic length check, allow chars like () - +)
+    const phoneStr = formData.get('phone') as string;
+    const digitsOnly = phoneStr.replace(/\D/g, '');
+    if (digitsOnly.length < 10) {
+      setErrorMsg(t.invalidPhone);
+      return;
+    }
+
+    // Validate Date
+    const dateStr = formData.get('date') as string;
+    if (dateStr) {
+      const selectedDate = new Date(dateStr);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (selectedDate < today) {
+        setErrorMsg(t.invalidDate);
+        return;
+      }
+    }
+
+    setIsLoading(true);
+
     photos.forEach((photo, index) => {
       if (photo) {
         formData.append(`photo${index}`, photo);
       }
     });
+    
+    // Add explicitly language
+    formData.append('lang', lang);
 
     try {
-      // Call the PHP script we created in public/api/submit.php
       const response = await fetch('/api/submit.php', {
         method: 'POST',
         body: formData,
@@ -108,8 +190,10 @@ export default function EstimateForm({ lang = 'en' }: Props) {
 
       const result = await response.json();
 
-      if (result.success) {
+      if (response.ok && result.success) {
         setSubmitted(true);
+        form.reset();
+        setPhotos([null]);
       } else {
         setErrorMsg(result.message || t.error);
       }
@@ -122,7 +206,7 @@ export default function EstimateForm({ lang = 'en' }: Props) {
 
   if (submitted) {
     return (
-      <div className="card text-center" style={{ padding: '3rem' }}>
+      <div className="card text-center" style={{ padding: '3rem' }} aria-live="polite" role="status">
         <div style={{ color: 'var(--color-primary-green)', fontSize: '4rem', marginBottom: '1rem' }}>✓</div>
         <h3>{t.success}</h3>
       </div>
@@ -136,13 +220,15 @@ export default function EstimateForm({ lang = 'en' }: Props) {
         <p>{t.subtitle}</p>
       </div>
 
-      {errorMsg && (
-        <div style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '1rem', borderRadius: '4px', marginBottom: '1rem' }}>
-          {errorMsg}
-        </div>
-      )}
+      <div aria-live="polite" role="alert">
+        {errorMsg && (
+          <div style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '1rem', borderRadius: '4px', marginBottom: '1rem' }}>
+            {errorMsg}
+          </div>
+        )}
+      </div>
 
-      <form onSubmit={handleSubmit} data-cta="estimate-form">
+      <form onSubmit={handleSubmit} data-cta="estimate-form" noValidate>
         {/* Anti-Spam Honeypot */}
         <div style={{ display: 'none' }} aria-hidden="true">
           <label htmlFor="website_url">Leave this field empty</label>
@@ -182,8 +268,8 @@ export default function EstimateForm({ lang = 'en' }: Props) {
           <label className="form-label" htmlFor="serviceType">{t.serviceType} *</label>
           <select className="form-select" id="serviceType" name="serviceType" required defaultValue="">
             <option value="" disabled>---</option>
-            {t.services.map((svc, i) => (
-              <option key={i} value={svc}>{svc}</option>
+            {t.services.map((svc) => (
+              <option key={svc.id} value={svc.id}>{svc.label}</option>
             ))}
           </select>
         </div>
@@ -205,12 +291,12 @@ export default function EstimateForm({ lang = 'en' }: Props) {
                 onChange={(e) => handlePhotoChange(e, index)}
                 className="form-input"
                 style={{ padding: '0.5rem' }}
+                ref={(el) => { fileInputRefs.current[index] = el; }}
               />
             </div>
           ))}
 
-          {/* Show the Add Photo button if the last slot is filled */}
-          {(photos[photos.length - 1] !== null) && (
+          {(photos[photos.length - 1] !== null && photos.length < 3) && (
             <button 
               type="button" 
               onClick={handleAddPhotoSlot}

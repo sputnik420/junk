@@ -4,45 +4,70 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { business } from '../../data/business';
 
-const title = "Política de Privacidad | ANSEB";
-const lang='es';
+const title = 'Política de Privacidad | ANSEB Junk Removal';
+const description = 'Política de privacidad de ANSEB Junk Removal. Conozca cómo recopilamos, utilizamos y protegemos su información al solicitar un estimado en Houston, TX.';
+const lang = 'es';
 ---
 
-<BaseLayout lang={lang} title={title}>
+<BaseLayout 
+  lang={lang} 
+  title={title}
+  description={description}
+  canonicalPath="/es/privacidad/"
+  alternatePath="/privacy/"
+>
   <Header lang={lang} />
   
   <main class="section">
-    <div class="container" style="max-width: 800px; margin: 0 auto; background: var(--color-white); padding: 3rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-      <h1 class="mb-4">Privacy Policy</h1>
+    <div class="container" style="max-width: 800px;">
+      <h1>Política de Privacidad</h1>
+      <p>Última actualización: 11 de julio de 2026</p>
       
-      <p class="mb-3">Última actualización: 11 de julio de 2026
-      
-      <p class="mb-3">At {business.name}, we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, and share information about you when you use our website or services.</p>
-      
-      <h2 class="mt-4 mb-3">Information We Collect</h2>
-      <p class="mb-3">We collect information you provide directly to us, such as when you request an estimate, fill out a form, or communicate with us. This information may include:</p>
-      <ul class="mb-3" style="margin-left: 1.5rem;">
-        <li>Name</li>
-        <li>Phone Number</li>
-        <li>Email Address</li>
-        <li>ZIP Code</li>
-        <li>Service Details</li>
-        <li>Photos (for estimate purposes)</li>
+      <p style="margin-top: 1.5rem;">
+        Esta Política de Privacidad describe cómo ANSEB Junk Removal ("nosotros") recopila, utiliza y protege su información personal cuando visita nuestro sitio web o utiliza nuestros servicios.
+      </p>
+
+      <h2 style="margin-top: 2.5rem;">Información que Recopilamos</h2>
+      <p>
+        Al solicitar un estimado o comunicarse con nosotros, podemos solicitarle cierta información personal, incluyendo:
+      </p>
+      <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem;">
+        <li>Nombre completo</li>
+        <li>Número de teléfono</li>
+        <li>Correo electrónico</li>
+        <li>Código postal o dirección del servicio</li>
+        <li>Descripción del servicio solicitado</li>
+        <li>Fotografías de los artículos a remover</li>
       </ul>
-      
-      <h2 class="mt-4 mb-3">How We Use Information</h2>
-      <p class="mb-3">We use the information we collect to:</p>
-      <ul class="mb-3" style="margin-left: 1.5rem;">
-        <li>Provide, maintain, and improve our services.</li>
-        <li>Process and complete transactions, and send you related information, including estimates and invoices.</li>
-        <li>Respond to your comments, questions, and requests.</li>
-        <li>Contact you regarding your request or inquiry.</li>
+
+      <h2 style="margin-top: 2.5rem;">Cómo Utilizamos la Información</h2>
+      <p>
+        Utilizamos la información recopilada exclusivamente para los siguientes propósitos:
+      </p>
+      <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem;">
+        <li>Preparar y proporcionar estimados precisos para el servicio.</li>
+        <li>Contactar al cliente para programar o confirmar citas.</li>
+        <li>Mejorar nuestros servicios y atención al cliente.</li>
       </ul>
-      
-      <h2 class="mt-4 mb-3">Contact Us</h2>
-      <p class="mb-3">If you have any questions about this Privacy Policy, please contact us at:</p>
-      <p class="mb-1"><strong>Phone:</strong> {business.phoneDisplay}</p>
-      <p class="mb-3"><strong>Email:</strong> {business.email}</p>
+
+      <h2 style="margin-top: 2.5rem;">Conservación de Datos</h2>
+      <p>
+        Conservamos su información personal durante un tiempo razonable necesario para procesar su solicitud de estimado y mantener nuestros registros comerciales básicos. Después de este periodo, los datos y fotografías son eliminados.
+      </p>
+
+      <h2 style="margin-top: 2.5rem;">No Vendemos su Información Personal</h2>
+      <p>
+        ANSEB Junk Removal respeta su privacidad. Nunca vendemos, intercambiamos ni transferimos a terceros su información de identificación personal. Esto excluye a terceros de confianza que nos asisten en la operación de nuestro sitio web o en la prestación del servicio a usted, siempre que dichas partes acuerden mantener esta información confidencial.
+      </p>
+
+      <h2 style="margin-top: 2.5rem;">Comuníquese con Nosotros</h2>
+      <p>
+        Si tiene alguna pregunta sobre esta Política de Privacidad, por favor póngase en contacto con nosotros en:
+      </p>
+      <ul style="list-style: none; margin-left: 0;">
+        <li><strong>Teléfono:</strong> {business.phoneDisplay}</li>
+        <li><strong>Email:</strong> {business.email}</li>
+      </ul>
     </div>
   </main>
   
