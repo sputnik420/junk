@@ -10,8 +10,6 @@ export const business = {
   googleBusinessProfileUrl: "https://www.google.com/maps/search/?api=1&query=ANSEB+Junk+Removal&query_place_id=ChIJS-Q6Sj_GQIYRrI7WCH81zM8",
   googleReviewUrl: "https://search.google.com/local/writereview?placeid=ChIJS-Q6Sj_GQIYRrI7WCH81zM8",
   googlePlaceId: "ChIJS-Q6Sj_GQIYRrI7WCH81zM8",
-  googleRating: "5.0",
-  googleReviewCount: "0",
   showGoogleReviews: true,
   facebookUrl: "https://www.facebook.com/profile.php?id=61592033511507",
   languages: {

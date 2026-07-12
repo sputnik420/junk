@@ -10,11 +10,20 @@ import ServiceAreas from '../components/ServiceAreas.astro';
 import FAQ from '../components/FAQ.astro';
 import CTASection from '../components/CTASection.astro';
 import Footer from '../components/Footer.astro';
+import EstimateForm from '../components/EstimateForm';
 
 const lang = 'en';
+const title = 'Junk Removal Houston, TX | ANSEB Junk Removal';
+const description = 'Fast, reliable junk removal in Houston and nearby areas. Furniture, appliances, garage cleanouts, yard waste and light construction debris. Call or text photos for a free estimate.';
 ---
 
-<BaseLayout lang={lang}>
+<BaseLayout 
+  lang={lang} 
+  title={title} 
+  description={description}
+  canonicalPath="/"
+  alternatePath="/es/"
+>
   <Header lang={lang} />
   
   <main>
@@ -54,7 +63,7 @@ const lang = 'en';
     
     <section class="section">
       <div class="container" style="max-width: 800px; margin: 0 auto;">
-        <div id="estimate-form-container"></div>
+        <EstimateForm client:load lang={lang} />
       </div>
     </section>
     
@@ -64,15 +73,3 @@ const lang = 'en';
   
   <Footer lang={lang} />
 </BaseLayout>
-
-<script>
-  import React from 'react';
-  import { createRoot } from 'react-dom/client';
-  import EstimateForm from '../components/EstimateForm';
-
-  const container = document.getElementById('estimate-form-container');
-  if (container) {
-    const root = createRoot(container);
-    root.render(React.createElement(EstimateForm, { lang: 'en' }));
-  }
-</script>

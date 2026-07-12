@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { business } from '../data/business';
+
+const title = `Page Not Found | ${business.name}`;
+const description = `We could not find the page you were looking for. Return to the home page or contact ${business.name}.`;
+const lang = 'en';
+---
+
+<BaseLayout 
+  lang={lang} 
+  title={title} 
+  description={description} 
+  canonicalPath="/404/"
+  noindex={true}
+>
+  <Header lang={lang} />
+  
+  <main style="min-height: 60vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 2rem;">
+    <div class="container">
+      <h1 style="font-size: 4rem; color: var(--color-primary-green); margin-bottom: 1rem;">404</h1>
+      <h2 style="margin-bottom: 1rem;">Page Not Found</h2>
+      <p style="margin-bottom: 2rem; color: var(--color-soft-black);">
+        Sorry, the page you are looking for doesn't exist or has been moved.<br />
+        <a href="/es/" style="font-size: 0.9rem; text-decoration: underline;">¿Buscas la página en español?</a>
+      </p>
+      
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="/" class="btn btn-primary">Return Home</a>
+        <a href={`tel:${business.phoneTel}`} class="btn btn-secondary">Call {business.phoneDisplay}</a>
+      </div>
+    </div>
+  </main>
+  
+  <Footer lang={lang} />
+</BaseLayout>

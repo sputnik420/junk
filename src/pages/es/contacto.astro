@@ -2,21 +2,29 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import EstimateForm from '../../components/EstimateForm';
 import { business } from '../../data/business';
 
-const title = "Estimado Gratis de Junk Removal en Houston | ANSEB";
-const lang='es';
+const title = 'Estimado Gratis de Junk Removal en Houston | ANSEB';
+const description = 'Solicite un estimado gratis para retiro de muebles, basura y artículos no deseados en Houston. Llame, envíe fotos o complete el formulario.';
+const lang = 'es';
 ---
 
-<BaseLayout lang={lang} title={title}>
+<BaseLayout 
+  lang={lang} 
+  title={title}
+  description={description}
+  canonicalPath="/es/contacto/"
+  alternatePath="/contact/"
+>
   <Header lang={lang} />
   
   <main>
     <section class="section section-gray">
       <div class="container text-center">
-        <h1>Contact Us</h1>
+        <h1>Solicite un Estimado Gratis</h1>
         <p style="font-size: 1.1rem; max-width: 600px; margin: 0 auto; color: var(--color-soft-black);">
-          Ready to get started? Fill out the form below or contact us directly.
+          ¿Está listo para comenzar? Complete el formulario o comuníquese directamente con nosotros.
         </p>
       </div>
     </section>
@@ -25,23 +33,22 @@ const lang='es';
       <div class="container" style="display: grid; grid-template-columns: 1fr; gap: 3rem;">
         
         <div class="contact-info" style="text-align: center;">
-          <h2 class="mb-3">Get in Touch</h2>
-          <p class="mb-2"><strong>Phone:</strong> <a href={`tel:${business.phoneTel}`}>{business.phoneDisplay}</a></p>
-          <p class="mb-2"><strong>Email:</strong> <a href={`mailto:${business.email}`}>{business.email}</a></p>
+          <h2 class="mb-3">Póngase en Contacto</h2>
+          <p class="mb-2"><strong>Teléfono:</strong> <a href={`tel:${business.phoneTel}`}>{business.phoneDisplay}</a></p>
+          <p class="mb-2"><strong>Correo Electrónico:</strong> <a href={`mailto:${business.email}`}>{business.email}</a></p>
 
-          
-          <div style="display: flex; justify-content: center; gap: 1rem;">
+          <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem;">
             <a href={`tel:${business.phoneTel}`} class="btn btn-primary" data-cta="call" data-location="contact">
-              Call Now
+              Llamar Ahora
             </a>
             <a href={`sms:${business.phoneTel}`} class="btn btn-secondary" data-cta="text" data-location="contact">
-              Text Photos
+              Enviar Fotos por Texto
             </a>
           </div>
         </div>
 
         <div style="max-width: 800px; margin: 0 auto; width: 100%;">
-          <div id="estimate-form-container-es-contact"></div>
+          <EstimateForm client:load lang={lang} />
         </div>
         
       </div>
@@ -50,18 +57,6 @@ const lang='es';
   
   <Footer lang={lang} />
 </BaseLayout>
-
-<script>
-  import React from 'react';
-  import { createRoot } from 'react-dom/client';
-  import EstimateForm from '../../components/EstimateForm';
-
-  const container = document.getElementById('estimate-form-container-es-contact');
-  if (container) {
-    const root = createRoot(container);
-    root.render(React.createElement(EstimateForm, { lang: 'en' }));
-  }
-</script>
 
 <style>
   @media (min-width: 768px) {

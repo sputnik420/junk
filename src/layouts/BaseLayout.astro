@@ -3,21 +3,43 @@ import { business } from '../data/business';
 import '../styles/global.css';
 
 interface Props {
-  title?: string;
-  description?: string;
+  title: string;
+  description: string;
   lang?: 'en' | 'es';
+  canonicalPath: string;
+  alternatePath?: string;
+  noindex?: boolean;
+  ogImage?: string;
+  pageType?: string;
 }
 
 const { 
-  title = `Junk Removal Houston TX | ${business.name}`,
-  description = `Need junk removal in Houston, TX? ${business.name} offers fast furniture removal, appliance removal, garage cleanouts, yard waste removal, construction debris hauling, and more. Call or text for a free estimate.`,
-  lang = 'en'
+  title,
+  description,
+  lang = 'en',
+  canonicalPath,
+  alternatePath,
+  noindex = false,
+  ogImage = '/images/og-share.jpg',
+  pageType = 'website'
 } = Astro.props;
 
-const currentUrl = new URL(Astro.url.pathname, Astro.site || business.domain).href;
-const alternateUrl = lang === 'en' 
-  ? new URL(business.languages.es, Astro.site || business.domain).href 
-  : new URL(business.languages.en, Astro.site || business.domain).href;
+const site = Astro.site ? Astro.site.toString().replace(/\/$/, '') : business.domain;
+const canonicalUrl = `${site}${canonicalPath}`;
+
+// Determine absolute paths for hreflang
+let enUrl = '';
+let esUrl = '';
+
+if (lang === 'en') {
+  enUrl = canonicalUrl;
+  esUrl = alternatePath ? `${site}${alternatePath}` : '';
+} else {
+  esUrl = canonicalUrl;
+  enUrl = alternatePath ? `${site}${alternatePath}` : '';
+}
+
+const ogImageUrl = `${site}${ogImage}`;
 ---
 
 <!DOCTYPE html>
@@ -29,58 +51,68 @@ const alternateUrl = lang === 'en'
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href={import.meta.env.BASE_URL + "favicon.svg"} />
     
-    <!-- Hreflang Tags -->
-    <link rel="alternate" hreflang="en" href={new URL(business.languages.en, Astro.site || business.domain).href} />
-    <link rel="alternate" hreflang="es" href={new URL(business.languages.es, Astro.site || business.domain).href} />
-    <link rel="canonical" href={currentUrl} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    
+    <link rel="canonical" href={canonicalUrl} />
+    
+    {/* Hreflang Tags */}
+    {enUrl && <link rel="alternate" hreflang="en" href={enUrl} />}
+    {esUrl && <link rel="alternate" hreflang="es" href={esUrl} />}
+    {enUrl && <link rel="alternate" hreflang="x-default" href={enUrl} />}
 
-    <!-- Open Graph Tags -->
+    {/* Open Graph Tags */}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={currentUrl} />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content={new URL(import.meta.env.BASE_URL + "images/og-share.jpg", Astro.site || business.domain).href} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:type" content={pageType} />
+    <meta property="og:image" content={ogImageUrl} />
     <meta property="og:image:width" content="1100" />
     <meta property="og:image:height" content="578" />
+    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'es_US'} />
+    {lang === 'en' && esUrl && <meta property="og:locale:alternate" content="es_US" />}
+    {lang === 'es' && enUrl && <meta property="og:locale:alternate" content="en_US" />}
 
-    <!-- Twitter Card Tags -->
+    {/* Twitter Card Tags */}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={new URL(import.meta.env.BASE_URL + "images/og-share.jpg", Astro.site || business.domain).href} />
+    <meta name="twitter:image" content={ogImageUrl} />
 
-    <!-- Google Tag Manager Placeholder -->
-    <!-- <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-XXXXXXX');</script> -->
-
-    <!-- LocalBusiness Schema -->
-    <script type="application/ld+json" set:html={JSON.stringify({
+    {/* LocalBusiness Schema */}
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
+      "@id": "https://ansebjunk.com/#business",
       "name": business.name,
       "url": business.domain,
-      "telephone": business.phoneDisplay,
-      "image": business.logo,
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": business.city,
-        "addressRegion": business.state
-      },
+      "telephone": business.phoneTel,
+      "email": business.email,
+      "logo": business.logo.startsWith('http') ? business.logo : `${site}${business.logo.startsWith('/') ? '' : '/'}${business.logo}`,
+      "image": `${site}/images/og-share.jpg`,
       "areaServed": business.serviceArea.map(area => ({
         "@type": "City",
         "name": area
       })),
-      "serviceType": "Junk Removal"
+      "serviceType": "Junk Removal",
+      "sameAs": [
+        business.googleBusinessProfileUrl,
+        business.facebookUrl
+      ].filter(Boolean),
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": business.phoneTel,
+        "contactType": "customer service",
+        "areaServed": "US",
+        "availableLanguage": ["English", "Spanish"]
+      }
     })} />
     
-    <!-- Fonts -->
+    {/* Fonts */}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   </head>
   <body>
-    <!-- GTM NoScript Placeholder -->
-    <!-- <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript> -->
-    
     <slot />
   </body>
 </html>
