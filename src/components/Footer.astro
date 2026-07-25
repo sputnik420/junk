@@ -39,7 +39,7 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
   <div class="container">
     <div class="footer-grid">
       <div class="footer-brand">
-        <img src={business.logo} alt={`${business.name} Logo`} class="footer-logo" />
+        <img src={import.meta.env.BASE_URL + "images/logos/blanco.png"} alt={`${business.name} Logo`} class="footer-logo" />
         <p class="footer-desc">
           {business.city}, {business.state}<br/>
           {business.spanish}
@@ -109,9 +109,6 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
     width: auto;
     object-fit: contain;
     margin-bottom: 1rem;
-    background-color: var(--color-white); /* Add white background for logo visibility if it's dark text */
-    padding: 0.5rem;
-    border-radius: 4px;
   }
   
   .footer-desc {
