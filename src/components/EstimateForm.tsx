@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useId } from 'react';
+import { adsTracker } from '../lib/googleAds';
 
 interface Props {
   lang?: 'en' | 'es';
@@ -242,6 +243,7 @@ export default function EstimateForm({ lang = 'en' }: Props) {
         setSubmitted(true);
         form.reset();
         setPhotos([null]);
+        adsTracker.formAccepted(result);
       } else {
         displayError(result.message || t.error);
       }
