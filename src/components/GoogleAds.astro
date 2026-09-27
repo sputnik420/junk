@@ -1,0 +1,30 @@
+---
+import { googleAds } from '../lib/googleAds';
+---
+
+<script is:inline define:vars={{ adsId: googleAds.id }}>
+  if (location.hostname === 'ansebjunk.com' || location.hostname === 'www.ansebjunk.com') {
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', adsId, {
+      allow_enhanced_conversions: false,
+      allow_ad_personalization_signals: false,
+    });
+    const tag = document.createElement('script');
+    tag.async = true;
+    tag.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(adsId);
+    document.head.appendChild(tag);
+  }
+</script>
+
+<script>
+  import { adsTracker } from '../lib/googleAds';
+
+  document.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element)) return;
+    const link = event.target.closest<HTMLAnchorElement>('a[href^="sms:"]');
+    if (link) adsTracker.smsClicked(link.getAttribute('href') || '');
+    // Preserve the native SMS link even when the Google tag is blocked.
+  });
+</script>

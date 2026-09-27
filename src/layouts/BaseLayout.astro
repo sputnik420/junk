@@ -1,5 +1,6 @@
 ---
 import { business } from '../data/business';
+import GoogleAds from '../components/GoogleAds.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -47,6 +48,7 @@ const ogImageUrl = `${site}${ogImage}`;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <GoogleAds />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href={import.meta.env.BASE_URL + "favicon.svg"} />

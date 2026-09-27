@@ -375,11 +375,14 @@ foreach ($valid_files as $vf) {
 $body .= "--$boundary--\r\n";
 
 // 8. Send Email
+$lead_id = bin2hex(random_bytes(16));
 $mail_success = @mail($to, $subject, $body, $headers);
 
 if ($mail_success) {
     http_response_code(200);
-    echo json_encode(['success' => true, 'message' => 'Your request has been sent successfully.']);
+    // Only accepted email submissions receive an opaque conversion identifier.
+    // Silent antispam responses intentionally do not include one.
+    echo json_encode(['success' => true, 'lead_id' => $lead_id, 'message' => 'Your request has been sent successfully.']);
 } else {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Internal server error while sending email.']);

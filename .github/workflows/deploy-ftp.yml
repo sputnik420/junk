@@ -6,6 +6,8 @@ on:
       - main
       - master
   workflow_dispatch:
+  pull_request:
+    branches: [main, master]
 
 jobs:
   build-and-deploy:
@@ -32,6 +34,9 @@ jobs:
       - name: Astro Check
         run: npm run check
 
+      - name: Conversion tracking tests
+        run: npm run test:tracking
+
       - name: Build Astro Site
         run: npm run build
         env:
@@ -44,6 +49,7 @@ jobs:
         run: php -l public/api/submit.php
 
       - name: Sync files via FTP to HostGator
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}

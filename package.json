@@ -10,6 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "test:tracking": "node --experimental-strip-types --test tests/googleAds.test.mjs",
     "validate:build": "node scripts/check-built-site.mjs",
     "astro": "astro"
   },
